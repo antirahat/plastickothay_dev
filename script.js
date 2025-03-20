@@ -1,4 +1,29 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // About modal functionality
+    const aboutLink = document.querySelector('.nav-menu li:nth-child(3) a');
+    const aboutModal = document.getElementById('aboutModal');
+    const closeModal = document.querySelector('.close-modal');
+    
+    if (aboutLink && aboutModal) {
+        aboutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            aboutModal.classList.add('active');
+        });
+    }
+    
+    if (closeModal && aboutModal) {
+        closeModal.addEventListener('click', function() {
+            aboutModal.classList.remove('active');
+        });
+        
+        // Close modal when clicking outside the modal content
+        aboutModal.addEventListener('click', function(e) {
+            if (e.target === aboutModal) {
+                aboutModal.classList.remove('active');
+            }
+        });
+    }
+    
     // Mobile menu toggle functionality
     const menuToggle = document.getElementById('menuToggle');
     const navMenu = document.querySelector('.nav-menu');

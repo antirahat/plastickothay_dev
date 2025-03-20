@@ -235,6 +235,7 @@ footer {
 @media (max-width: 768px) {
     .menu-toggle {
         display: block;
+        z-index: 1010;
     }
 
     .nav-menu {
@@ -248,25 +249,53 @@ footer {
         padding: 2rem;
         transition: right 0.3s ease;
         box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1005;
+        align-items: flex-start;
+        gap: 2rem;
     }
 
     .nav-menu.active {
         right: 0;
+    }
+    
+    .nav-menu a {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 0;
+        font-size: 1.1rem;
     }
 
     .map-controls {
         bottom: 1.5rem;
         right: 1.5rem;
     }
+    
+    /* Hamburger menu animation */
+    .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    
+    .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    
+    .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+    }
 }
 
 @media (max-width: 480px) {
     header {
-        padding: 1rem;
+        padding: 0.8rem 1rem;
     }
 
     .logo img {
-        height: 30px;
+        height: 28px;
+    }
+    
+    .nav-menu {
+        width: 80%;
+        padding: 1.5rem;
     }
 
     .map-controls {
@@ -282,5 +311,10 @@ footer {
     .report-btn {
         padding: 0.6rem 1.2rem;
         font-size: 0.9rem;
+    }
+    
+    /* Ensure map takes full height on mobile */
+    .map-container {
+        height: calc(100vh - 100px);
     }
 }

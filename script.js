@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (menuToggle) {
         menuToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
+            menuToggle.classList.toggle('active');
         });
     }
     

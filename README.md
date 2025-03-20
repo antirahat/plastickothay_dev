@@ -3,7 +3,7 @@
 ![Plastic Kothay Banner](assets/gitbanner.jpg)
 
 ## Overview
-[Plastic Kothay](plastickothay.framer.site) is an interactive web application designed to track and tackle plastic waste through crowdsourced data. This repository contains the frontend code for the application, which is currently in development and testing phase.
+[Plastic Kothay](plastickothay.framer.website) is an interactive web application designed to track and tackle plastic waste through crowdsourced data. This repository contains the frontend code for the application, which is currently in development and testing phase.
 
 ## Features
 - Interactive map interface using OpenStreetMap

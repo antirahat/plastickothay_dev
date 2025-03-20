@@ -3,7 +3,7 @@
 ![Plastic Kothay Banner](assets/gitbanner.jpg)
 
 ## Overview
-Plastic Kothay is an interactive web application designed to track and tackle plastic waste through crowdsourced data. This repository contains the frontend code for the application, which is currently in development and testing phase.
+[Plastic Kothay](plastickothay.framer.site) is an interactive web application designed to track and tackle plastic waste through crowdsourced data. This repository contains the frontend code for the application, which is currently in development and testing phase.
 
 ## Features
 - Interactive map interface using OpenStreetMap
@@ -11,29 +11,6 @@ Plastic Kothay is an interactive web application designed to track and tackle pl
 - Mobile-responsive design
 - Reporting system for plastic waste sightings (coming soon)
 - About modal with project information
-
-## Technology Stack
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Leaflet.js for map functionality
-- OpenStreetMap for map data
-
-## Installation
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/frontend_plastickothay.git
-   ```
-
-2. Navigate to the project directory:
-   ```
-   cd frontend_plastickothay
-   ```
-
-3. Open the project in your preferred code editor
-
-4. Launch the application by opening `index.html` in a web browser
 
 ## Usage
 
@@ -61,12 +38,6 @@ Plastic Kothay is an interactive web application designed to track and tackle pl
 
 ## Contributing
 This project is currently in development. Contribution guidelines will be added soon.
-
-## Roadmap
-- Implement full reporting functionality
-- Add user authentication
-- Create dashboard for data visualization
-- Develop community features
 
 ## Status
 This application is currently in development and testing phase. Soon the product will be available on Product Hunt. Stay Updated!

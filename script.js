@@ -30,8 +30,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (menuToggle) {
         menuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            menuToggle.classList.toggle('active');
+            // Check if the menu toggle is already active (X state)
+            if (menuToggle.classList.contains('active')) {
+                // If it's active (X showing), hide the menu
+                navMenu.classList.remove('active');
+                menuToggle.classList.remove('active');
+            } else {
+                // If it's not active (hamburger showing), show the menu
+                navMenu.classList.add('active');
+                menuToggle.classList.add('active');
+            }
         });
     }
     
@@ -39,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(event) {
         if (!event.target.closest('nav') && navMenu.classList.contains('active')) {
             navMenu.classList.remove('active');
+            menuToggle.classList.remove('active');
         }
     });
     

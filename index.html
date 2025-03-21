@@ -55,6 +55,54 @@
         </div>
     </div>
     
+    <!-- Report Modal -->
+    <div class="modal" id="reportModal">
+        <div class="modal-content report-modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Report Plastic Waste</h2>
+            <p>Help us track plastic pollution by submitting a report with photo and details.</p>
+            
+            <form id="reportForm" class="report-form">
+                <div class="form-group">
+                    <label for="photo">Upload Photo:</label>
+                    <input type="file" id="photo" name="photo" accept="image/*" required>
+                    <div id="photoPreview" class="photo-preview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Your Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="severity">Pollution Severity (1-5):</label>
+                    <div class="severity-container">
+                        <input type="range" id="severity" name="severity" min="1" max="5" value="3">
+                        <div class="severity-labels">
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Contact Number:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Report</button>
+            </form>
+        </div>
+    </div>
+    
     <footer>
         <p>&copy; 2023 Plastic Kothay. All rights reserved.</p>
     </footer>

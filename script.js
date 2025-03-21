@@ -98,10 +98,74 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Report button functionality
     const reportBtn = document.getElementById('reportBtn');
-    if (reportBtn) {
+    const reportModal = document.getElementById('reportModal');
+    const reportCloseModal = reportModal ? reportModal.querySelector('.close-modal') : null;
+    const photoInput = document.getElementById('photo');
+    const photoPreview = document.getElementById('photoPreview');
+    const reportForm = document.getElementById('reportForm');
+    
+    if (reportBtn && reportModal) {
         reportBtn.addEventListener('click', function() {
-            // Placeholder for report functionality
-            alert('Report functionality will be implemented here');
+            reportModal.classList.add('active');
+        });
+    }
+    
+    if (reportCloseModal && reportModal) {
+        reportCloseModal.addEventListener('click', function() {
+            reportModal.classList.remove('active');
+        });
+        
+        // Close modal when clicking outside the modal content
+        reportModal.addEventListener('click', function(e) {
+            if (e.target === reportModal) {
+                reportModal.classList.remove('active');
+            }
+        });
+    }
+    
+    // Photo preview functionality
+    if (photoInput && photoPreview) {
+        photoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    photoPreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                photoPreview.innerHTML = '';
+            }
+        });
+    }
+    
+    // Form submission
+    if (reportForm) {
+        reportForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const reportData = {
+                name: formData.get('name'),
+                severity: formData.get('severity'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                photo: photoInput.files[0] ? photoInput.files[0].name : null
+            };
+            
+            // For now, just log the data and show success message
+            console.log('Report submitted:', reportData);
+            alert('Thank you for your report! We will review it shortly.');
+            
+            // Reset form and close modal
+            this.reset();
+            photoPreview.innerHTML = '';
+            reportModal.classList.remove('active');
+            
+            // In a real application, you would send this data to a server
+            // using fetch or XMLHttpRequest
         });
     }
 });

@@ -1,3 +1,5 @@
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // About modal functionality
     const aboutLink = document.querySelector('.nav-menu li:nth-child(3) a');
@@ -58,13 +60,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (mapElement) {
         // Initialize the map with a default view of Bangladesh
-        map = L.map('map').setView([23.8103, 90.4125], 7);
+        map = L.map('map'); // do not use setview initially 
         
         // Add OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
         }).addTo(map);
+        connectLocation();
     }
     
     // Current location button functionality
@@ -95,7 +98,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
+    //connect location function
+    function connectLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                // Center map on user's location
+                map.setView([lat, lng], 15);
+                // Add or update marker for user's location
+                if (userMarker) {
+                    userMarker.setLatLng([lat, lng]);
+                } else {
+                    userMarker = L.marker([lat, lng]).addTo(map);
+                    userMarker.bindPopup('Your location').openPopup();
+                }
+            }, function(error) {
+                console.error('Error getting location:', error);
+                alert('Unable to get your location. Please check your permissions.');
+            });
+        } else {
+            alert('Geolocation is not supported by your browser.');
+            
+        }   // Add or update marker for user's location
+    }
     // Report button functionality
     const reportBtn = document.getElementById('reportBtn');
     const reportModal = document.getElementById('reportModal');

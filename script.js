@@ -124,6 +124,41 @@ document.addEventListener('DOMContentLoaded', function() {
             
         }   // Add or update marker for user's location
     }
+
+    document.querySelector('.profile-btn').addEventListener('click', () => {
+        document.querySelector('.profile-modal').classList.add('active');
+    });
+    
+    // Profile modal close functionality
+    const profileModal = document.querySelector('.profile-modal');
+    const profileCloseModal = profileModal ? profileModal.querySelector('.close-modal') : null;
+    
+    if (profileCloseModal && profileModal) {
+        profileCloseModal.addEventListener('click', function() {
+            profileModal.classList.remove('active');
+        });
+        
+        // Close modal when clicking outside the modal content
+        profileModal.addEventListener('click', function(e) {
+            if (e.target === profileModal) {
+                profileModal.classList.remove('active');
+            }
+        });
+    }
+    
+    // Tab switching
+    const authTabs = document.querySelectorAll('.auth-tab');
+    authTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            authTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            // Toggle form fields and button text based on active tab
+        });
+    });
+
+    // Sign up and sign in functionality
+    const signUpForm = document.getElementById('signUpForm');
+    const signInForm = document.getElementById('signInForm');
     // Report button functionality
     const reportBtn = document.getElementById('reportBtn');
     const reportModal = document.getElementById('reportModal');

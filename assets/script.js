@@ -166,6 +166,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const photoInput = document.getElementById('photo');
     const photoPreview = document.getElementById('photoPreview');
     const reportForm = document.getElementById('reportForm');
+    const openphotoBtn = document.getElementById('openphotoBtn');
+    const photoModal = document.getElementById('photoModal');
+    const photoCloseModal = photoModal ? photoModal.querySelector('.close-modal') : null;
     
     if (reportBtn && reportModal) {
         reportBtn.addEventListener('click', function() {
@@ -231,4 +234,47 @@ document.addEventListener('DOMContentLoaded', function() {
             // using fetch or XMLHttpRequest
         });
     }
+
+    // photo modal control
+if (openphotoBtn && photoModal) {
+    openphotoBtn.addEventListener('click', function() {
+        openphotoBtn.classList.add('active');
+    });
+}
+
+if (photoCloseModal && photoModal) {
+    photoCloseModal.addEventListener('click', function() {
+        photoModal.classList.remove('active');
+    });
+    
+    // Close modal when clicking outside the modal content
+    photoModal.addEventListener('click', function(e) {
+        if (e.target === reportModal) {
+            photoModal.classList.remove('active');
+        }
+    });
+}
+
+// const video = document.getElementById('video');
+//         const canvas = document.getElementById('canvas');
+//         const photo = document.getElementById('photo');
+//         const capture = document.getElementById('capture');
+    
+//         // Ask for camera access
+//         navigator.mediaDevices.getUserMedia({ video: true })
+//           .then((stream) => {
+//             video.srcObject = stream;
+//           })
+//           .catch((err) => {
+//             console.error("Error accessing camera:", err);
+//             alert("Camera access denied or not available.");
+//           });
+    
+//         // Capture photo on button click
+//         capture.addEventListener('click', () => {
+//           const context = canvas.getContext('2d');
+//           context.drawImage(video, 0, 0, canvas.width, canvas.height);
+//           const dataURL = canvas.toDataURL('image/png');
+//           photo.src = dataURL;
+//         });
 });

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plastic Kothay</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="{% static "style.css" %}">
     <!-- Leaflet CSS for OpenStreetMap -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
@@ -12,15 +13,15 @@
 </head>
 <body>
     <header>
-        <button class="profile-btn">
+        {% comment %} <button class="profile-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
             <span>Profile</span>
-        </button>
+        </button> {% endcomment %}
         
         <div class="logo">
-            <img src="assets/logo.svg" alt="Plastic Kothay Logo">
+            <img src="{% static "logo.svg" %}" alt="Plastic Kothay Logo">
         </div>
         <nav>
             <button class="menu-toggle" id="menuToggle">
@@ -96,42 +97,43 @@
             <h2>Report Plastic Waste</h2>
             <p>Help us track plastic pollution by submitting a report with photo and details.</p>
             <!-- Add this in your header -->
-<button class="profile-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-    </svg>
-    <span>Profile</span>
-</button>
+            <button class="profile-btn" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span>Profile</span>
+            </button>
 
-<!-- Add this modal for profile/auth -->
-<div class="modal profile-modal">
-    <div class="modal-content profile-modal-content">
-        <span class="close-modal">&times;</span>
-        <div class="auth-tabs">
-            <div class="auth-tab active">Login</div>
-            <div class="auth-tab">Register</div>
-        </div>
-        <form class="auth-form">
-            <div class="form-group">
-                <label for="mobile">Mobile Number</label>
-                <input type="tel" id="mobile" required pattern="[0-9]{11}">
+            <!-- Add this modal for profile/auth -->
+            <div class="modal profile-modal">
+                <div class="modal-content profile-modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div class="auth-tabs">
+                        <div class="auth-tab active">Login</div>
+                        <div class="auth-tab">Register</div>
+                    </div>
+                    <form class="auth-form">
+                        <div class="form-group">
+                            <label for="mobile">Mobile Number</label>
+                            <input type="tel" id="mobile" required pattern="[0-9]{11}">
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Register</button>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required>
-            </div>
-            <button type="submit" class="submit-btn">Register</button>
-        </form>
-    </div>
-</div>
             <form id="reportForm" class="report-form">
-                <div class="form-group">
-                    <label for="photo">Upload Photo:</label>
+                <div class="form-group" style="height: 100%;">
+                    <label for="photo">Take Photo:</label>
                     <input type="file" id="photo" name="photo" accept="image/*" required>
+                    <p style="text-align: center;" class="submit-btn" id="openphotoBtn">Take Photo</p>
                     <div id="photoPreview" class="photo-preview"></div>
                 </div>
                 
@@ -163,20 +165,37 @@
                     <label for="email">Email Address:</label>
                     <input type="email" id="email" name="email" required>
                 </div>
+
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea type="text" id="description" name="description"></textarea>
+                </div>
                 
                 <button type="submit" class="submit-btn">Submit Report</button>
             </form>
         </div>
     </div>
+
+    <div class="modal" id="photoModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 align="center">Take Photo</h2>
+            <video id="video" width="400" height="300" autoplay></video>
+            <button id="capture">Capture Photo</button>
+            <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+            <img id="photo" alt="Captured Image"/>
+        </div>
+    </div>
     
     <footer>
         <p>&copy; 2023 Plastic Kothay. All rights reserved.</p>
-    </footer>
+    </footer>    
+    
 
     <!-- Leaflet JavaScript for OpenStreetMap -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
             crossorigin=""></script>
-    <script src="script.js"></script>
+    <script src="{% static "script.js" %}"></script>
 </body>
 </html>

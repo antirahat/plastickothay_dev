@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const openphotoBtn = document.getElementById('openphotoBtn');
     const photoModal = document.getElementById('photoModal');
     const photoCloseModal = photoModal ? photoModal.querySelector('.close-modal') : null;
+    var flag = false ;
     
     if (reportBtn && reportModal) {
         reportBtn.addEventListener('click', function() {
@@ -236,45 +237,125 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // photo modal control
-if (openphotoBtn && photoModal) {
-    openphotoBtn.addEventListener('click', function() {
-        openphotoBtn.classList.add('active');
-    });
-}
+    if (openphotoBtn && photoModal) {
+        openphotoBtn.addEventListener('click', function() {
+            photoModal.classList.add('active');
+            photocontrol() ;
+        });
+    }
 
-if (photoCloseModal && photoModal) {
-    photoCloseModal.addEventListener('click', function() {
-        photoModal.classList.remove('active');
-    });
-    
-    // Close modal when clicking outside the modal content
-    photoModal.addEventListener('click', function(e) {
-        if (e.target === reportModal) {
+    if (photoCloseModal && photoModal) {
+        photoCloseModal.addEventListener('click', function() {
             photoModal.classList.remove('active');
+            stopCameraStream();
+        });
+        
+        // Close modal when clicking outside the modal content
+        // photoModal.addEventListener('click', function(e) {
+        //     if (e.target === reportModal) {
+        //         photoModal.classList.remove('active');
+                
+        //     }
+        // });
+    }
+    
+    function photocontrol() {
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const capture = document.getElementById('capture');
+        const retake = document.getElementById('retake');
+        const done = document.getElementById('done');
+        const preview = document.getElementById('photoPreview');
+    
+        if (!window.photoStream) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    window.photoStream = stream;
+                    video.srcObject = stream;
+    
+                    video.addEventListener('loadedmetadata', () => {
+                        video.play();
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        showVideo();
+                    });
+                })
+                .catch((err) => {
+                    console.error("Camera error:", err);
+                    alert("Camera access denied or not available.");
+                });
+        } else {
+            video.srcObject = window.photoStream;
+            video.play();
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            showVideo();
         }
-    });
-}
+    
+        function showVideo() {
+            video.style.display = 'block';
+            canvas.style.display = 'none';
+            capture.style.display = 'inline-block';
+            retake.style.display = 'none';
+            done.style.display = 'none';
+        }
+    
+        function showPhoto(dataURL) {
+            // photo.src = dataURL;
+            canvas.style.display = 'block';
+            video.style.display = 'none';
+            capture.style.display = 'none';
+            retake.style.display = 'inline-block';
+            done.style.display = 'inline-block';
+        }
+    
+        capture.onclick = () => {
+            setTimeout(() => {
+                const context = canvas.getContext('2d');                
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const ctx2 = preview.getContext('2d');
+                preview.width = canvas.width;
+                preview.height = canvas.height;
+                ctx2.drawImage(canvas, 0, 0);
+                const dataURL = canvas.toDataURL('image/png');
+                showPhoto(dataURL);
+            }, 100);
+        };
+    
+        retake.onclick = showVideo;
 
-// const video = document.getElementById('video');
-//         const canvas = document.getElementById('canvas');
-//         const photo = document.getElementById('photo');
-//         const capture = document.getElementById('capture');
+        done.onclick = () => {
+            document.getElementById('photoModal').classList.remove('active');
+            stopCameraStream() ;
+        }
+    }
     
-//         // Ask for camera access
-//         navigator.mediaDevices.getUserMedia({ video: true })
-//           .then((stream) => {
-//             video.srcObject = stream;
-//           })
-//           .catch((err) => {
-//             console.error("Error accessing camera:", err);
-//             alert("Camera access denied or not available.");
-//           });
+    function stopCameraStream() {
+        const video = document.getElementById('video');
+        const stream = video.srcObject;
     
-//         // Capture photo on button click
-//         capture.addEventListener('click', () => {
-//           const context = canvas.getContext('2d');
-//           context.drawImage(video, 0, 0, canvas.width, canvas.height);
-//           const dataURL = canvas.toDataURL('image/png');
-//           photo.src = dataURL;
-//         });
+        if (stream) {
+            // Stop each media track
+            stream.getTracks().forEach(track => {
+                track.stop();
+            });
+    
+            // Forcefully clear any references
+            video.srcObject = null;
+            video.removeAttribute('srcObject');
+            video.removeAttribute('src');
+            video.load();  // Force reload and detach
+        }
+    
+        video.pause();
+        window.photoStream = null;
+    }
+    const clearBtn = document.getElementById('clearBtn') ;
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            const preview = document.getElementById('photoPreview');
+            const ctx2 = preview.getContext('2d');
+            ctx2.clearRect(0, 0, preview.width, preview.height);
+        });
+    }
 });

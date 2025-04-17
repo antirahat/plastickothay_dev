@@ -131,19 +131,19 @@
             </div>
             <form id="reportForm" class="report-form">
                 <div class="form-group" style="height: 100%;">
-                    <label for="photo">Take Photo:</label>
-                    <input type="file" id="photo" name="photo" accept="image/*" required>
+                    {% comment %} <input type="file" id="photo" name="photo" accept="image/*" required> {% endcomment %}
                     <p style="text-align: center;" class="submit-btn" id="openphotoBtn">Take Photo</p>
-                    <div id="photoPreview" class="photo-preview"></div>
+                    <span id="clearBtn" style="float: right; cursor: pointer;">Reset</span>
+                    <canvas id="photoPreview" class="photo-preview"></canvas>
                 </div>
                 
                 <div class="form-group">
-                    <label for="name">Your Name:</label>
+                    <label for="name">Your Name: <span class='mandatory'>*</span></label>
                     <input type="text" id="name" name="name" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="severity">Pollution Severity (1-5):</label>
+                    <label for="severity">Pollution Severity (1-5): <span class='mandatory'>*</span></label>
                     <div class="severity-container">
                         <input type="range" id="severity" name="severity" min="1" max="5" value="3">
                         <div class="severity-labels">
@@ -157,12 +157,12 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="phone">Contact Number:</label>
+                    <label for="phone">Contact Number: <span class='mandatory'>*</span></label>
                     <input type="tel" id="phone" name="phone" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="email">Email Address:</label>
+                    <label for="email">Email Address: <span class='mandatory'>*</span></label>
                     <input type="email" id="email" name="email" required>
                 </div>
 
@@ -178,12 +178,14 @@
 
     <div class="modal" id="photoModal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal" id="photoclose">&times;</span>
             <h2 align="center">Take Photo</h2>
-            <video id="video" width="400" height="300" autoplay></video>
-            <button id="capture">Capture Photo</button>
-            <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
-            <img id="photo" alt="Captured Image"/>
+            {% comment %}  width="400" height="300"  {% endcomment %}
+            <video id="video" autoplay></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <button class="submit-btn" id="capture">Capture Photo</button>
+            <button class="submit-btn" id="retake" style="display:none;">Retake Photo</button>
+            <button class="submit-btn" id="done" style="display:none;">Done</button>
         </div>
     </div>
     

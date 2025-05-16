@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="stylesheet" href="{% static "style.css" %}">   
+</head>
+<body>
+    <!-- messages -->
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+            <div class="calert {{ message.tags }}">                
+                {{ message }}
+                <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+  
+    <header>
+        {% comment %} <button class="profile-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span>Profile</span>
+        </button> {% endcomment %}
+        
+        <div class="logo">
+            <img src="{% static "logo.svg" %}" alt="Plastic Kothay Logo">
+        </div>
+        <nav>
+            <button class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="{% url 'plastickothay:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Map</a></li>
+                <li><a href="{% url 'plastickothay:posts' %}" class="{% if request.resolver_match.url_name == 'posts' or request.resolver_match.url_name == 'post' %}active{% endif %}">Posts</a></li>                
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+                {% if user %}
+                    <li><a href="{% url 'superadmin:login' %}">Dashboard</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        
+    </header>
+    
+    <main>
+        {% block main_content %}
+        {% endblock main_content %}
+    </main>
+    
+    <!-- About Modal -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Plastic Kothay</h2>
+            <p>A crowdsourced, interactive map designed to track and tackle plastic waste. Help us improve it by sharing your thoughts!</p>
+            <div class="version">v 1.0</div>
+        </div>
+    </div>
+    
+    <!-- register/auth modal -->
+    <div class="modal profile-modal">
+        <div class="modal-content profile-modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="auth-tabs">
+                <div class="auth-tab active">Login</div>
+                <div class="auth-tab">Register</div>
+            </div>
+            <form class="auth-form">
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="text" id="mobile" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal" id="reportModal">
+        <div class="modal-content report-modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Post Plastic Waste</h2>
+            <p>Help us track plastic pollution by submitting a report with photo and details.</p>
+            <!-- Add this in your header -->
+            <button class="profile-btn" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span>Profile</span>
+            </button>
+
+            <!-- Add this modal for profile/auth -->
+            <div class="modal profile-modal">
+                <div class="modal-content profile-modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div class="auth-tabs">
+                        <div class="auth-tab active">Login</div>
+                        <div class="auth-tab">Register</div>
+                    </div>
+                    <form class="auth-form">
+                        <div class="form-group">
+                            <label for="mobile">Mobile Number</label>
+                            <input type="text" id="mobile">
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Register</button>
+                    </form>
+                </div>
+            </div>
+            <form method="post" id="reportForm" class="report-form">
+                {% csrf_token %}
+                <div class="form-group" style="height: 100%;">
+                    {% comment %} <input type="file" id="photo" name="photo" accept="image/*" required> {% endcomment %}
+                    <p style="text-align: center;" class="submit-btn" id="openphotoBtn">Take Photo</p>
+                    <span id="clearBtn" style="float: right; cursor: pointer;">Reset</span>
+                    <canvas id="photoPreview" class="photo-preview"></canvas>
+                    <input type="hidden" id="photoData" name="photoData" required>
+                    <input type="hidden" id="latData" name="latData">
+                    <input type="hidden" id="lonData" name="lonData">
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Your Name: <span class='mandatory'>*</span></label>
+                    <input type="text" id="name" name="nameData" value="{{ user.first_name }} {{ user.last_name }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="severity">Pollution Severity (1-5): <span class='mandatory'>*</span></label>
+                    <div class="severity-container">
+                        <input type="range" id="severity" name="severityData" min="1" max="5" value="3">
+                        <div class="severity-labels">
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Contact Number: <span class='mandatory'>*</span></label>
+                    <input type="text" id="phone" name="phoneData" value="{{ user.phone }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address: <span class='mandatory'>*</span></label>
+                    <input type="email" id="email" name="emailData" value="{{ user.email }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea type="text" id="description" name="descriptionData"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Post</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="photoModal">
+        <div class="modal-content">
+            <span class="close-modal" id="photoclose">&times;</span>
+            <h2 align="center">Take Photo</h2>
+            {% comment %}  width="400" height="300"  {% endcomment %}
+            <video id="video" autoplay></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+            <button class="submit-btn" id="capture">Capture Photo</button>
+            <button class="submit-btn" id="retake" style="display:none;">Retake Photo</button>
+            <button class="submit-btn" id="done" style="display:none;">Done</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Plastic Kothay. All rights reserved.</p>
+    </footer>    
+    
+    <script src="{% static "script.js" %}"></script>
+    <script>
+        document.title = "{% block title_content %}{% endblock title_content %}" ;
+    </script>
+</body>
+</html>

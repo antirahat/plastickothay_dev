@@ -1,45 +1,18 @@
-<!DOCTYPE html>
+{% extends "plastickothay/base.html" %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plastic Kothay</title>
-    <link rel="stylesheet" href="{% static "style.css" %}">
-    <!-- Leaflet CSS for OpenStreetMap -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
-          crossorigin=""/>
-</head>
-<body>
-    <header>
-        {% comment %} <button class="profile-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-            <span>Profile</span>
-        </button> {% endcomment %}
-        
-        <div class="logo">
-            <img src="{% static "logo.svg" %}" alt="Plastic Kothay Logo">
-        </div>
-        <nav>
-            <button class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu">
-                <li><a href="#" class="active">Map</a></li>
-                <li><a href="#">Report</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-        
-    </header>
-    
-    <main>
+{% block main_content %}
+        <!-- Leaflet CSS for OpenStreetMap -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+            crossorigin=""/>
+        <!-- Leaflet JavaScript for OpenStreetMap -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>        
+        <script>
+            const posts = {{ posts|safe }} ;
+        </script>
+
         <div class="map-container">
             <div id="map"></div>
             <div class="map-controls">
@@ -48,156 +21,9 @@
                 </button>
                 <button class="report-btn" id="reportBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                    Report
+                    Post
                 </button>
             </div>
         </div>
-    </main>
-    
-    <!-- About Modal -->
-    <div class="modal" id="aboutModal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Plastic Kothay</h2>
-            <p>A crowdsourced, interactive map designed to track and tackle plastic waste. Help us improve it by sharing your thoughts!</p>
-            <div class="version">v 1.0</div>
-        </div>
-    </div>
-    
-    <!-- register/auth modal -->
-    <div class="modal profile-modal">
-        <div class="modal-content profile-modal-content">
-            <span class="close-modal">&times;</span>
-            <div class="auth-tabs">
-                <div class="auth-tab active">Login</div>
-                <div class="auth-tab">Register</div>
-            </div>
-            <form class="auth-form">
-                <div class="form-group">
-                    <label for="mobile">Mobile Number</label>
-                    <input type="tel" id="mobile" required pattern="[0-9]{11}">
-                </div>
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit" class="submit-btn">Register</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Report Modal -->
-    <div class="modal" id="reportModal">
-        <div class="modal-content report-modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Report Plastic Waste</h2>
-            <p>Help us track plastic pollution by submitting a report with photo and details.</p>
-            <!-- Add this in your header -->
-            <button class="profile-btn" style="display: none;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-                <span>Profile</span>
-            </button>
-
-            <!-- Add this modal for profile/auth -->
-            <div class="modal profile-modal">
-                <div class="modal-content profile-modal-content">
-                    <span class="close-modal">&times;</span>
-                    <div class="auth-tabs">
-                        <div class="auth-tab active">Login</div>
-                        <div class="auth-tab">Register</div>
-                    </div>
-                    <form class="auth-form">
-                        <div class="form-group">
-                            <label for="mobile">Mobile Number</label>
-                            <input type="tel" id="mobile" required pattern="[0-9]{11}">
-                        </div>
-                        <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" id="password" required>
-                        </div>
-                        <button type="submit" class="submit-btn">Register</button>
-                    </form>
-                </div>
-            </div>
-            <form id="reportForm" class="report-form">
-                <div class="form-group" style="height: 100%;">
-                    {% comment %} <input type="file" id="photo" name="photo" accept="image/*" required> {% endcomment %}
-                    <p style="text-align: center;" class="submit-btn" id="openphotoBtn">Take Photo</p>
-                    <span id="clearBtn" style="float: right; cursor: pointer;">Reset</span>
-                    <canvas id="photoPreview" class="photo-preview"></canvas>
-                </div>
-                
-                <div class="form-group">
-                    <label for="name">Your Name: <span class='mandatory'>*</span></label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="severity">Pollution Severity (1-5): <span class='mandatory'>*</span></label>
-                    <div class="severity-container">
-                        <input type="range" id="severity" name="severity" min="1" max="5" value="3">
-                        <div class="severity-labels">
-                            <span>1</span>
-                            <span>2</span>
-                            <span>3</span>
-                            <span>4</span>
-                            <span>5</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="phone">Contact Number: <span class='mandatory'>*</span></label>
-                    <input type="tel" id="phone" name="phone" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email Address: <span class='mandatory'>*</span></label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea type="text" id="description" name="description"></textarea>
-                </div>
-                
-                <button type="submit" class="submit-btn">Submit Report</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="photoModal">
-        <div class="modal-content">
-            <span class="close-modal" id="photoclose">&times;</span>
-            <h2 align="center">Take Photo</h2>
-            {% comment %}  width="400" height="300"  {% endcomment %}
-            <video id="video" autoplay></video>
-            <canvas id="canvas" style="display:none;"></canvas>
-            <button class="submit-btn" id="capture">Capture Photo</button>
-            <button class="submit-btn" id="retake" style="display:none;">Retake Photo</button>
-            <button class="submit-btn" id="done" style="display:none;">Done</button>
-        </div>
-    </div>
-    
-    <footer>
-        <p>&copy; 2023 Plastic Kothay. All rights reserved.</p>
-    </footer>    
-    
-
-    <!-- Leaflet JavaScript for OpenStreetMap -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
-            crossorigin=""></script>
-    <script src="{% static "script.js" %}"></script>
-</body>
-</html>
+{% endblock main_content %}
+{% block title_content %}Plastic Kothay{% endblock title_content %}

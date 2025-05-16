@@ -1,0 +1,118 @@
+{% extends "plastickothay/base.html" %}
+{% load static %}
+{% block main_content %}
+        <div class="post-container">
+            <h1>All Posts</h1>
+            <div class="filter-container">
+                <a href="?filter=all" class="{% if request.GET.filter == 'all' or not request.GET.filter %}active{% endif %}">All</a>
+                <a href="?filter=today" class="{% if request.GET.filter == 'today' %}active{% endif %}">Today</a>
+                <a href="?filter=last_week" class="{% if request.GET.filter == 'last_week' %}active{% endif %}">Last Week</a>
+                <a href="?filter=last_28_days" class="{% if request.GET.filter == 'last_28_days' %}active{% endif %}">Last 28 Days</a>
+                <a href="?filter=severity_1" class="{% if request.GET.filter == 'severity_1' %}active{% endif %}">Severity 1</a>
+                <a href="?filter=severity_2" class="{% if request.GET.filter == 'severity_2' %}active{% endif %}">Severity 2</a>
+                <a href="?filter=severity_3" class="{% if request.GET.filter == 'severity_3' %}active{% endif %}">Severity 3</a>
+                <a href="?filter=severity_4" class="{% if request.GET.filter == 'severity_4' %}active{% endif %}">Severity 4</a>
+                <a href="?filter=severity_5" class="{% if request.GET.filter == 'severity_5' %}active{% endif %}">Severity 5</a>
+                {% if user.is_authenticated %}
+                    <a href="?filter=accepted" class="{% if request.GET.filter == 'accepted' %}active{% endif %}">Accepted</a>
+                    <a href="?filter=pending" class="{% if request.GET.filter == 'pending' %}active{% endif %}">Pending</a>
+                {% endif %}
+            </div>
+            {% if posts|length > 0 %}
+                {% if user.is_authenticated %}
+                    {% for post in posts %}
+                        <div class="post-card">
+                            <div class="post-card-left">
+                                {% if post.imageID %}
+                                <div class="image-container">
+                                    <img src="https://drive.google.com/thumbnail?id={{ post.imageID }}" alt="Post Image">
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="post-card-right">
+                                <div class="post-action">
+                                    {% if post.status == 2 %}
+                                        <button class="accept" onclick="window.location.href = '{% url "superadmin:accept" post.id %}?next={{ request.path }}'">Accept</button>
+                                    {% endif %}
+                                    <button class="reject" onclick="window.location.href = '{% url "superadmin:reject" post.id %}?next={{ request.path }}'">Delete</button>
+                                    <p><strong>Status:</strong> {% if post.status == 1 %}Accepted{% elif post.status == 2 %}Pending{% endif %}</p>
+                                </div>
+                                <h2>{{ post.name }}</h2>
+                                {% comment %} <p><strong>Email:</strong> {{ post.email }}</p>
+                                <p><strong>Phone Number:</strong> {{ post.pN }}</p> {% endcomment %}
+                                <p><strong>Severity:</strong>
+                                    <label for="severity">Pollution Severity (1-5):</label>
+                                    <div class="severity-container">
+                                        <input type="range" id="severity" name="severityData" min="1" max="5" value="{{ post.severity }}" disabled>
+                                        <div class="severity-labels">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </p>                      
+                                {% comment %} <p><strong>Lat:</strong> {{ post.lat }}&nbsp & &nbsp<strong>Lon:</strong> {{ post.lon }}</p>                     {% endcomment %}
+                                {% comment %} <div class="description-container">
+                                    <strong>Description:</strong>
+                                    <p>{{ post.description }}</p>
+                                </div> {% endcomment %}
+                                <p><strong>Date:</strong> {{ post.created }}</p>
+                                <a href='{% url "plastickothay:post" post.id %}' class="view">View Post</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% for post in posts %}
+                        {% if post.status == 1 %}
+                            <div class="post-card">
+                                <div class="post-card-left">
+                                    {% if post.imageID %}
+                                    <div class="image-container">
+                                        <img src="https://drive.google.com/thumbnail?id={{ post.imageID }}" alt="Post Image">
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="post-card-right">
+                                    <h2>{{ post.name }}</h2>
+                                    {% comment %} <p><strong>Email:</strong> {{ post.email }}</p>
+                                    <p><strong>Phone Number:</strong> {{ post.pN }}</p> {% endcomment %}
+                                    <p><strong>Severity:</strong>
+                                        <label for="severity">Pollution Severity (1-5):</label>
+                                        <div class="severity-container">
+                                            <input type="range" id="severity" name="severityData" min="1" max="5" value="{{ post.severity }}" disabled>
+                                            <div class="severity-labels">
+                                                <span>1</span>
+                                                <span>2</span>
+                                                <span>3</span>
+                                                <span>4</span>
+                                                <span>5</span>
+                                            </div>
+                                        </div>
+                                    </p>                      
+                                    {% comment %} <p><strong>Lat:</strong> {{ post.lat }}&nbsp & &nbsp<strong>Lon:</strong> {{ post.lon }}</p>                     {% endcomment %}
+                                    {% comment %} <div class="description-container">
+                                        <strong>Description:</strong>
+                                        <p>{{ post.description }}</p>
+                                    </div> {% endcomment %}
+                                    <p><strong>Date:</strong> {{ post.created }}</p>
+                                    <a href='{% url "plastickothay:post" post.id %}' class="view">View Post</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                <div class="post-card">
+                    No post found
+                </div>
+            {% endif %}
+        </div>
+        {% if posts|length >= 10 %}
+            <button class="loadBtn" onclick="window.location.href = '?index=5'">Load More</button>
+        {% endif %}
+{% endblock main_content %}
+{% block title_content %}All Posts{% endblock title_content %}

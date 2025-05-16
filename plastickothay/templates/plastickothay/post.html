@@ -1,0 +1,238 @@
+{% extends "plastickothay/base.html" %}
+{% load static %}
+{% block main_content %}
+<style>
+/* Modal overlay */
+.desmodal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+    z-index: 9999;
+    {% comment %} display: flex; {% endcomment %}
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content box */
+.desmodal-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal heading */
+.desmodal-content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+}
+
+/* Textarea styling */
+#descriptionTextarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+}
+
+/* Modal button container */
+.desmodal-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Modal buttons */
+.desmodal-actions button {
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.desmodal-actions button:first-child {
+    background-color: #28a745; /* green for save */
+    color: white;
+}
+
+.desmodal-actions button:last-child {
+    background-color: #dc3545; /* red for cancel */
+    color: white;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+    <!-- Leaflet CSS for OpenStreetMap -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+        crossorigin=""/>
+    <!-- Leaflet JavaScript for OpenStreetMap -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+        crossorigin=""></script>   
+
+    <div class="post-container">
+        <h1>Post Details</h1>
+        {% if user.is_authenticated %}
+            <div class="post-card">
+                <div class="post-card-left">
+                    {% if post.imageID %}
+                    <div class="image-container">
+                        <img src="https://drive.google.com/thumbnail?id={{ post.imageID }}" alt="Post Image">
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="post-card-right">
+                    {% comment %} {% if user.is_authenticated %} {% endcomment %}
+                        <div class="post-action">
+                            {% if post.status == 2 %}
+                                <button class="accept" onclick="window.location.href = '{% url "superadmin:accept" post.id %}?next={{ request.path }}'">Accept</button>
+                            {% endif %}
+                            <button class="edit" onclick="openEditModal()">Edit</button>
+                            <button class="reject" onclick="window.location.href = '{% url "superadmin:reject" post.id %}?next={{ request.path }}'">Delete</button>
+                            <p><strong>Status:</strong> {% if post.status == 1 %}Accepted{% elif post.status == 2 %}Pending{% endif %}</p>
+                        </div>
+                    {% comment %} {% endif %} {% endcomment %}
+                    <h2>{{ post.name }}</h2>
+                    <p><strong>Date:</strong> {{ post.created }}</p>
+                    <p><strong>Email:</strong> {{ post.email }}</p>
+                    <p><strong>Phone Number:</strong> {{ post.pN }}</p>
+                    <p><strong>Severity:</strong> 
+                        <label for="severity">Pollution Severity (1-5):</label>
+                        <div class="severity-container">
+                            <input type="range" id="severity" name="severityData" min="1" max="5" value="{{ post.severity }}" disabled>
+                            <div class="severity-labels">
+                                <span>1</span>
+                                <span>2</span>
+                                <span>3</span>
+                                <span>4</span>
+                                <span>5</span>
+                            </div>
+                        </div>
+                    </p>
+                    <p><strong>Lat:</strong> {{ post.lat }}&nbsp & &nbsp<strong>Lon:</strong> {{ post.lon }}</p>                    
+                    <div class="description-container">
+                        <strong>Description:</strong>
+                        <p>{{ post.description }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="post-card">
+                <div class="post-card-left">
+                    {% if post.imageID %}
+                    <div class="image-container">
+                        <img src="https://drive.google.com/thumbnail?id={{ post.imageID }}" alt="Post Image">
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="post-card-right">
+                    <h2>{{ post.name }}</h2>
+                    <p><strong>Date:</strong> {{ post.created }}</p>
+                    <p><strong>Email:</strong> {{ post.email }}</p>
+                    <p><strong>Phone Number:</strong> {{ post.pN }}</p>
+                    <p><strong>Severity:</strong> 
+                        <label for="severity">Pollution Severity (1-5):</label>
+                        <div class="severity-container">
+                            <input type="range" id="severity" name="severityData" min="1" max="5" value="{{ post.severity }}" disabled>
+                            <div class="severity-labels">
+                                <span>1</span>
+                                <span>2</span>
+                                <span>3</span>
+                                <span>4</span>
+                                <span>5</span>
+                            </div>
+                        </div>
+                    </p>
+                    <p><strong>Lat:</strong> {{ post.lat }}&nbsp & &nbsp<strong>Lon:</strong> {{ post.lon }}</p>                    
+                    <div class="description-container">
+                        <strong>Description:</strong>
+                        <p>{{ post.description }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="post-map-container">
+        <div id="post_map"></div>
+    </div>
+
+    <!-- Edit Description Modal -->
+    <div id="editDescriptionModal" class="desmodal" style="display: none;">
+        <form class="desmodal-content" method="post">
+            {% csrf_token %}
+            <h3>Edit Description</h3>
+            <textarea id="descriptionTextarea" name="description">{{ post.description }}</textarea>
+            <div class="desmodal-actions">
+                <button type="submit">Save</button>
+                <button type="button" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const mapElement = document.getElementById("post_map");
+
+            if (mapElement) {
+                const lat = parseFloat("{{ post.lat|default:'0' }}");
+                const lon = parseFloat("{{ post.lon|default:'0' }}");
+
+                if (!isNaN(lat) && !isNaN(lon) && lat !== 0 && lon !== 0) {
+                    const map = L.map('post_map').setView([lat, lon], 13);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        maxZoom: 13
+                    }).addTo(map);
+
+                    // Marker
+                    map.whenReady(() => {
+                        const marker = L.marker([lat, lon]).addTo(map);
+                        marker.bindPopup(`<b>{{ post.name }}</b><br>Severity: {{ post.severity }}`).openPopup();
+                    });
+
+                } else {
+                    mapElement.innerHTML = "<p>Coordinates missing or invalid.</p>";
+                }
+            }           
+        });
+        function openEditModal() {
+            document.getElementById('editDescriptionModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editDescriptionModal').style.display = 'none';
+        }
+
+        function saveDescription() {
+            const newDescription = document.getElementById('descriptionTextarea').value;
+            
+            // Optional: send newDescription to backend via AJAX/fetch
+            // For now, update it on page directly
+            document.querySelector('.description-container p').innerText = newDescription;
+
+            closeEditModal();
+        }
+    </script>
+
+{% endblock main_content %}
+{% block title_content %}Post Details{% endblock title_content %}

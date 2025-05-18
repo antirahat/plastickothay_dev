@@ -282,16 +282,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 
         //     }
         // });
-    }
-    
+    }    
+
+    let currentFacingMode = "user";
+
     function photocontrol() {
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const capture = document.getElementById('capture');
         const retake = document.getElementById('retake');
         const done = document.getElementById('done');
+        const switchBtn = document.getElementById('switchCamera');
         const preview = document.getElementById('photoPreview');
-    
+
         if (!window.photoStream) {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then((stream) => {
@@ -324,6 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
             capture.style.display = 'inline-block';
             retake.style.display = 'none';
             done.style.display = 'none';
+            switchBtn.style.display = 'inline-block';
         }
     
         function showPhoto(dataURL) {
@@ -333,7 +337,14 @@ document.addEventListener('DOMContentLoaded', function() {
             capture.style.display = 'none';
             retake.style.display = 'inline-block';
             done.style.display = 'inline-block';
+            switchBtn.style.display = 'none';
         }
+
+        switchBtn.onclick = () => {            
+            currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+            stopCameraStream();
+            startCamera();
+        };
     
         capture.onclick = () => {
             setTimeout(() => {                
@@ -344,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 preview.height = canvas.height;
                 ctx2.drawImage(canvas, 0, 0);
                 const dataURL = canvas.toDataURL('image/png');
-                showPhoto(dataURL);                
+                showPhoto(dataURL);
             }, 100);
         };
     
@@ -377,6 +388,102 @@ document.addEventListener('DOMContentLoaded', function() {
         video.pause();
         window.photoStream = null;
     }
+
+    // let currentFacingMode = "user"; // default to front camera
+    // let image_flag = false;
+
+    // function startCamera() {
+    //     const constraints = {
+    //         video: {
+    //             facingMode: { exact: currentFacingMode }
+    //         }
+    //     };
+
+    //     navigator.mediaDevices.getUserMedia(constraints)
+    //         .then((stream) => {
+    //             window.photoStream = stream;
+    //             const video = document.getElementById('video');
+    //             video.srcObject = stream;
+
+    //             video.onloadedmetadata = () => {
+    //                 video.play();
+    //                 const canvas = document.getElementById('canvas');
+    //                 canvas.width = video.videoWidth;
+    //                 canvas.height = video.videoHeight;
+    //             };
+    //         })
+    //         .catch((err) => {
+    //             console.error("Camera error:", err);
+    //             alert("Unable to access selected camera.");
+    //         });
+    // }
+
+    // function stopCameraStream() {
+    //     if (window.photoStream) {
+    //         window.photoStream.getTracks().forEach(track => track.stop());
+    //         window.photoStream = null;
+    //     }
+    // }
+
+    // function photocontrol() {
+    //     const video = document.getElementById('video');
+    //     const canvas = document.getElementById('canvas');
+    //     const capture = document.getElementById('capture');
+    //     const retake = document.getElementById('retake');
+    //     const done = document.getElementById('done');
+    //     const switchBtn = document.getElementById('switchCamera');
+    //     const preview = document.getElementById('photoPreview');
+
+    //     startCamera(); // start initial camera
+    //     showVideo();
+
+    //     function showVideo() {
+    //         image_flag = false;
+    //         video.style.display = 'block';
+    //         canvas.style.display = 'none';
+    //         capture.style.display = 'inline-block';
+    //         retake.style.display = 'none';
+    //         done.style.display = 'none';
+    //         switchBtn.style.display = 'inline-block';
+    //     }
+
+    //     function showPhoto(dataURL) {
+    //         canvas.style.display = 'block';
+    //         video.style.display = 'none';
+    //         capture.style.display = 'none';
+    //         retake.style.display = 'inline-block';
+    //         done.style.display = 'inline-block';
+    //         switchBtn.style.display = 'none';
+    //     }
+
+    //     switchBtn.onclick = () => {
+    //         currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+    //         stopCameraStream();
+    //         startCamera();
+    //     };
+
+    //     capture.onclick = () => {
+    //         setTimeout(() => {
+    //             const context = canvas.getContext('2d');
+    //             context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    //             const ctx2 = preview.getContext('2d');
+    //             preview.width = canvas.width;
+    //             preview.height = canvas.height;
+    //             ctx2.drawImage(canvas, 0, 0);
+    //             const dataURL = canvas.toDataURL('image/png');
+    //             showPhoto(dataURL);
+    //         }, 100);
+    //     };
+
+    //     retake.onclick = showVideo;
+
+    //     done.onclick = () => {
+    //         document.getElementById('photoModal').classList.remove('active');
+    //         image_flag = true;
+    //         stopCameraStream();
+    //     };
+    // }
+
     const clearBtn = document.getElementById('clearBtn') ;
     if (clearBtn) {
         clearBtn.addEventListener('click', function() {

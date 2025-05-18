@@ -39,8 +39,8 @@
                                     <p><strong>Status:</strong> {% if post.status == 1 %}Accepted{% elif post.status == 2 %}Pending{% endif %}</p>
                                 </div>
                                 <h2>{{ post.name }}</h2>
-                                {% comment %} <p><strong>Email:</strong> {{ post.email }}</p>
-                                <p><strong>Phone Number:</strong> {{ post.pN }}</p> {% endcomment %}
+                                <p><strong>Email:</strong> {{ post.email }}</p>
+                                <p><strong>Phone Number:</strong> {{ post.pN }}</p>
                                 <p><strong>Severity:</strong>
                                     <label for="severity">Pollution Severity (1-5):</label>
                                     <div class="severity-container">

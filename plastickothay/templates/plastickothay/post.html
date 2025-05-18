@@ -147,8 +147,8 @@
                 <div class="post-card-right">
                     <h2>{{ post.name }}</h2>
                     <p><strong>Date:</strong> {{ post.created }}</p>
-                    <p><strong>Email:</strong> {{ post.email }}</p>
-                    <p><strong>Phone Number:</strong> {{ post.pN }}</p>
+                    {% comment %} <p><strong>Email:</strong> {{ post.email }}</p>
+                    <p><strong>Phone Number:</strong> {{ post.pN }}</p> {% endcomment %}
                     <p><strong>Severity:</strong> 
                         <label for="severity">Pollution Severity (1-5):</label>
                         <div class="severity-container">

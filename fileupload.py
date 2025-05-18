@@ -1,5 +1,6 @@
 import os
 import io
+from PIL import Image, ImageOps
 import json
 import base64
 from google.oauth2.service_account import Credentials
@@ -35,14 +36,14 @@ drive_service = build("drive", "v3", credentials=creds)
 
 def upload_to_drive(base64_image: str, filename: str) -> dict | None:
     """
-    Upload a base64-encoded image to a Google Drive folder.
+    Upload a base64-encoded image to a Google Drive folder as a square image.
     
     Args:
         base64_image (str): Base64 string with header (e.g., "data:image/png;base64,...")
-        filename (str): Desired filename
+        filename (str): Desired filename (with or without extension)
     
     Returns:
-        dict: Uploaded file metadata
+        dict: Uploaded file metadata or None if failed
     """
     try:
         if ';base64,' not in base64_image:
@@ -50,16 +51,32 @@ def upload_to_drive(base64_image: str, filename: str) -> dict | None:
 
         header, data = base64_image.split(';base64,')
         file_ext = header.split('/')[-1].strip()
-        file_data = base64.b64decode(data)
+        if '.' not in filename:
+            filename += f".{file_ext}"
 
-        fh = io.BytesIO(file_data)
+        # Decode base64 image data
+        file_data = base64.b64decode(data)
+        image = Image.open(io.BytesIO(file_data)).convert("RGBA")
+
+        # Make the image square (resize and pad/crop)
+        size = max(image.size)
+        square_image = Image.new("RGBA", (size, size), (255, 255, 255, 0))  # Transparent background
+        square_image.paste(
+            image, ((size - image.width) // 2, (size - image.height) // 2)
+        )
+
+        # Save to in-memory file
+        output_io = io.BytesIO()
+        square_image.save(output_io, format=file_ext.upper())
+        output_io.seek(0)
+
         mimetype = f'image/{file_ext}'
-        media = MediaIoBaseUpload(fh, mimetype=mimetype, resumable=True)
+        media = MediaIoBaseUpload(output_io, mimetype=mimetype, resumable=True)
 
         file_metadata = {
             'name': filename,
             'mimeType': mimetype,
-            'parents': [FOLDER_ID]  # ✅ Upload to specific folder
+            'parents': [FOLDER_ID]  # Replace with your folder ID
         }
 
         uploaded_file = drive_service.files().create(

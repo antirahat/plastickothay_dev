@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const openphotoBtn = document.getElementById('openphotoBtn');
     const photoModal = document.getElementById('photoModal');
     const photoCloseModal = photoModal ? photoModal.querySelector('.close-modal') : null;
-    var image_flag = false ;
+    // var image_flag = false ;
     
     if (reportBtn && reportModal) {
         reportBtn.addEventListener('click', function() {

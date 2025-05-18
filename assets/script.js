@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Initialize on page load
-    window.onload = photocontrol;
+    // window.onload = photocontrol;
 
     const clearBtn = document.getElementById('clearBtn') ;
     if (clearBtn) {

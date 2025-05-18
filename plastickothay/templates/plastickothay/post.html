@@ -89,7 +89,7 @@
 
     <div class="post-container">
         <h1>Post Details</h1>
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and (user.type == 1 or user.type == 2) %}
             <div class="post-card">
                 <div class="post-card-left">
                     {% if post.imageID %}

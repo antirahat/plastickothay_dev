@@ -8,14 +8,14 @@ class User(Document) :
 
     first_name = StringField(required=True)
     last_name = StringField(required=True)
-    username = StringField(required=True)
-    email = EmailField(required=True)
+    username = StringField(required=True, unique=True)
+    email = EmailField(required=True, unique=True)
     phone = StringField(required=True)
     password = StringField(required=True)
     user_type = IntField(default=3) # 1 = superadmin & 2 = admin & 3 = user
     is_active = BooleanField(default=False)
     last_login = DateTimeField()
-    date_joined = DateTimeField(default=datetime.now)
+    date_joined = DateTimeField(default=datetime.utcnow)
 
     def save(self, *args, **kwargs):
         if self.password and not is_password_usable(self.password):

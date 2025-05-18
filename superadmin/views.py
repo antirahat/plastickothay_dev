@@ -51,6 +51,8 @@ def login_view(request):
                 else:
                     request.session.set_expiry(1209600)
                     response = redirect('superadmin:dashboard')
+                    response.delete_cookie('remember_me')
+                    response.delete_cookie('user_id')
                     response.set_cookie('remember_me', '1', max_age=1209600, httponly=True, samesite='Lax')
                     response.set_cookie('user_id', str(user.id), max_age=1209600, httponly=True, samesite='Lax')
 

@@ -30,9 +30,17 @@ class CustomUserCreationForm(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if User.objects.filter(username=username).exists():
+        user = User.objects(username=username)
+        if user:
             raise ValidationError("This username is already taken.")
         return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        user = User.objects(email=email)
+        if user:
+            raise ValidationError("This email is already taken.")
+        return email
 
     def clean(self):
         cleaned_data = super().clean()

@@ -14,4 +14,4 @@ class Post(Document) :
     lon = FloatField(required=True)
     description = StringField(default="No description provided.")
     status = IntField(default=2) # 0 = rejected, 1 = accepted, 2 = pending
-    created = DateTimeField(default=datetime.now())
+    created = DateTimeField(default=datetime.utcnow)

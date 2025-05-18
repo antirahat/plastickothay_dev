@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // });
     }    
 
-    let currentFacingMode = "user";
+    let currentFacingMode = "environment";
 
     function photocontrol() {
         const video = document.getElementById('video');

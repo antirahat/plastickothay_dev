@@ -48,6 +48,7 @@ def login_view(request):
                     response = redirect('superadmin:dashboard')
                     response.delete_cookie('remember_me')
                     response.delete_cookie('user_id')
+                    user.is_active = False
                 else:
                     request.session.set_expiry(1209600)
                     response = redirect('superadmin:dashboard')
@@ -63,6 +64,9 @@ def login_view(request):
         form = LoginForm()
 
         # If remember_me cookie is set, redirect automatically
+        if request.session.get('user_id') :
+            return redirect('superadmin:dashboard')
+        
         if request.COOKIES.get('remember_me') == '1' and request.COOKIES.get('user_id'):
             request.session['user_id'] = request.COOKIES.get('user_id')
             return redirect('superadmin:dashboard')

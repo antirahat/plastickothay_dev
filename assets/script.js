@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
             capture.style.display = 'inline-block';
             retake.style.display = 'none';
             done.style.display = 'none';
-            switchBtn.style.display = 'inline-block';
+            switchBtn.style.display = 'none';
         }
 
         function showPhoto(dataURL) {

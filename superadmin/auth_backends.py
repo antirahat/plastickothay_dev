@@ -8,7 +8,7 @@ class MongoBackend(BaseBackend):
     def authenticate(self, request, username=None, password=None):
         try:
             user = User.objects(__raw__={"$or": [{"username": username}, {"email": username}]}).first()
-            if user and check_password(password, user.password):  # Ensure password matches
+            if user and check_password(password, user.password):
                 user.last_login = datetime.now()
                 user.is_active = True
                 user.save()
@@ -19,8 +19,7 @@ class MongoBackend(BaseBackend):
             return None
 
     def get_user(self, user_id):
-        try:
-            # Django calls this method to retrieve a user based on user_id
+        try:            
             return User.objects.get(pk=ObjectId(user_id))
         except User.DoesNotExist:
             return None

@@ -62,7 +62,7 @@
       <a class="{% if request.resolver_match.url_name == 'dashboard' %}sidebtn-active{% endif %}" href="{% url 'superadmin:dashboard' %}">Dashboard</a>
       <a href="{% url "plastickothay:home" %}">Map</a>
       <a href="{% url "plastickothay:posts" %}">Posts</a>
-      <a class="{% if request.resolver_match.url_name == 'users' %}sidebtn-active{% endif %}" href="#">Users</a>
+      <a class="{% if request.resolver_match.url_name == 'users' %}sidebtn-active{% endif %}" href="{% url 'superadmin:users' %}">Users</a>
       <a class="{% if request.resolver_match.url_name == 'settings' %}sidebtn-active{% endif %}" href="#">Settings</a>
       <a class="{% if request.resolver_match.url_name == 'logout' %}sidebtn-active{% endif %}" href="{% url 'superadmin:logout' %}">Logout</a>
     </div>

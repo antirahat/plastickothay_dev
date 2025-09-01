@@ -1,5 +1,6 @@
 from django.core.mail import send_mail, EmailMessage
 from plastickothay.models import Post
+from superadmin.models import User, OTP
 
 def test_email() :
     send_mail(
@@ -56,4 +57,56 @@ def post_mail(post: Post) :
         )
         return True
     except :
+        return False
+    
+def account_verification_mail(user: User, otp: OTP):
+    subject = "🔐 Verify Your Plastickothay Account"
+    body = (
+        f"Hi {user.first_name} {user.last_name},\n\n"
+        f"Welcome to Plastickothay! To activate your account, please verify your email address.\n\n"
+        f"Your verification code is:\n\n"
+        f"    {otp.code}\n\n"
+        f"This code will expire in 3 minutes, so please use it promptly.\n\n"
+        f"If you did not create this account, please ignore this email.\n\n"
+        f"Thank you for joining us in the fight against plastic pollution!\n\n"
+        f"— The Plastickothay Team"
+    )
+
+    try:
+        send_mail(
+            subject,
+            body,
+            'contact.plastickothay@gmail.com',
+            [user.email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        # optional: log error e
+        return False
+    
+def password_reset_mail(user: User, otp: OTP):
+    subject = "🔐 Reset Your Plastickothay Password"
+    body = (
+        f"Hi {user.first_name} {user.last_name},\n\n"
+        f"We received a request to reset the password for your Plastickothay account.\n\n"
+        f"Your password reset code is:\n\n"
+        f"    {otp.code}\n\n"
+        f"This code will expire in 3 minutes, so please use it promptly.\n\n"
+        f"If you did not request a password reset, please ignore this email.\n\n"
+        f"Thank you for helping us fight plastic pollution!\n\n"
+        f"— The Plastickothay Team"
+    )
+
+    try:
+        send_mail(
+            subject,
+            body,
+            'contact.plastickothay@gmail.com',
+            [user.email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        # optional: log error e
         return False

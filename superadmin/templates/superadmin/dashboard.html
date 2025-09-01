@@ -1,4 +1,5 @@
 {% extends "superadmin/base.html" %}
+{% load static %}
 {% block main-content %}
 <style>
     .wish {
@@ -9,6 +10,19 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
+    }
+
+    .map-container {
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      width: 100%;
+      height: 400px; /* You can adjust */
+    }
+
+    #admin_map {
+      width: 100%;
+      height: 100%;
     }
 
     .card {
@@ -86,10 +100,28 @@
     }
 </style>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+    crossorigin=""/>
+<!-- Leaflet JavaScript for OpenStreetMap -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+    crossorigin=""></script>
+
+<!-- Leaflet heat -->
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
 <!-- 👋 Greeting -->
 <h2 class="wish">Good {{ wish }}, {{ user.first_name }} {{ user.last_name }} 
   {% if user.user_type == 1 %}(Super Admin){% elif user.user_type == 2 %}(Admin){% endif %}👋
 </h2>
+
+<div class="filter-container">
+  <a href="?filter=last_28_days" class="{% if request.GET.filter == 'last_28_days' or not request.GET.filter %}active{% endif %}">Last 28 Days</a>  
+  <a href="?filter=today" class="{% if request.GET.filter == 'today' %}active{% endif %}">Today</a>
+  <a href="?filter=last_week" class="{% if request.GET.filter == 'last_week' %}active{% endif %}">Last Week</a>
+  <a href="?filter=all" class="{% if request.GET.filter == 'all'%}active{% endif %}">Lifetime</a>
+</div>
 
 <!-- 📊 Dashboard Stats -->
 <div class="main">
@@ -97,6 +129,11 @@
     <div class="dashboard-grid">
       <div class="card" id="total-post-chart"></div>
       <div class="card" id="pending-post-chart"></div>
+    </div>
+
+    <!-- Map section -->
+    <div class="map-container">
+      <div id="admin_map"></div>
     </div>
 
     <!-- 📋 Table Section -->
@@ -144,6 +181,110 @@
   const accept_count = {{ accept_count }};
   const reject_count = {{ reject_count }};
   const pending_count = {{ pending_count }};
+</script>
+
+<script>
+  const mapElement = document.getElementById('admin_map');
+  let map;
+  const posts = {{ posts|safe }} ;
+
+  if (mapElement) {
+    // Use the correct ID: admin_map
+    map = L.map('admin_map'); 
+    
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(map);
+
+    // If you have this function defined somewhere
+    if (typeof connectLocation === "function") {
+      connectLocation();
+    }
+  }
+
+  if (navigator.geolocation && map) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        // Center the map on user's location
+        map.setView([lat, lng], 12);
+
+        // Optionally, add a marker for the user
+        // L.marker([lat, lng]).addTo(map)
+        //   .bindPopup('Your location')
+        //   .openPopup();
+      }, 
+      function(error) {
+        console.error('Error getting location:', error);
+        alert('Unable to get your location. Please check your permissions.');
+      }
+    );
+  }
+  function set_post() {
+    // const basePostUrl = "{% url 'plastickothay:post' 'REPLACE_ID' %}".replace('REPLACE_ID', '');
+    
+    // var circle = L.circle([23.8103, 90.4125], {
+    //     color: 'transparent',        // stroke color
+    //     fillColor: '#30a3ff', // fill color
+    //     fillOpacity: 0.5,
+    //     radius: 500           // radius in meters
+    // }).addTo(map);
+
+    // circle.bindPopup("Radius: 500 m");
+
+    var ICON_URL = "{% static 'icon.png' %}";
+
+    var customIcon = L.icon({
+        iconUrl: ICON_URL, // your icon image URL
+        iconSize: [20, 30],  // size of icon
+        iconAnchor: [20, 40], // point of icon which will correspond to marker's location
+        popupAnchor: [0, -35] // popup position relative to icon
+    });
+
+    if (posts && posts.length > 0) {
+        posts.forEach(post => {
+            const postId = post._id.$oid;
+            // const postUrl = basePostUrl + postId;
+            const postUrl = "/post/" + postId
+            L.marker([post.lat, post.lon], { icon: customIcon })
+                .addTo(map)
+                .bindPopup(`<b>${post.name}</b><br>Severity: ${post.severity}<br><a href="${postUrl}">Open post</a>`)
+        });
+    } else {
+        console.warn("No posts found to add markers.");
+    }
+  }
+
+  set_post() ;
+
+  function set_heat() {
+    let heatPoints = [];
+
+    for (let i = 0; i < posts.length; i++) {
+        let post = posts[i];
+        // Assuming Django passed them as { lat: ..., lng: ... }
+        heatPoints.push([post.lat, post.lon]);
+    }
+
+    L.heatLayer(heatPoints, {
+      radius: 50,        // how big each point is in pixels
+      blur: 5,          // smoothing
+      maxZoom: 17,       // zoom level where points max out
+      max: 1.0,          // intensity scale
+      gradient: {        // optional custom colors
+          0.4: 'blue',
+          0.65: 'lime',
+          1: 'red'
+      }
+    }).addTo(map);
+  }
+
+  set_heat() ;
+
 </script>
 
 {% endblock main-content %}

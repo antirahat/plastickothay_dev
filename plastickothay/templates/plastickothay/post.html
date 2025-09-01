@@ -89,7 +89,7 @@
 
     <div class="post-container">
         <h1>Post Details</h1>
-        {% if user.is_authenticated and (user.type == 1 or user.type == 2) %}
+        {% if user.is_authenticated and user.user_type != 3%}        
             <div class="post-card">
                 <div class="post-card-left">
                     {% if post.imageID %}
@@ -204,16 +204,23 @@
                         maxZoom: 13
                     }).addTo(map);
 
+                    var customIcon = L.icon({
+                        iconUrl: ICON_URL, // your icon image URL
+                        iconSize: [20, 30],  // size of icon
+                        iconAnchor: [20, 40], // point of icon which will correspond to marker's location
+                        popupAnchor: [0, -35] // popup position relative to icon
+                    });
+
                     // Marker
                     map.whenReady(() => {
-                        const marker = L.marker([lat, lon]).addTo(map);
+                        const marker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
                         marker.bindPopup(`<b>{{ post.name }}</b><br>Severity: {{ post.severity }}`).openPopup();
                     });
 
                 } else {
                     mapElement.innerHTML = "<p>Coordinates missing or invalid.</p>";
                 }
-            }           
+            }
         });
         function openEditModal() {
             document.getElementById('editDescriptionModal').style.display = 'flex';

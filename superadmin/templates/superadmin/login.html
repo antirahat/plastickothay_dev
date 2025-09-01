@@ -92,6 +92,19 @@
       transform: scale(1.2);
     }
 
+    .forget {
+      text-align: center ;
+      margin-bottom: 5px ;
+    }
+
+    .forget a {
+      color: black ;
+    }
+    
+    .forget a:hover {
+      color: blue ;
+    }
+
     .btn-login {
       width: 100%;
       padding: 12px;
@@ -222,6 +235,9 @@
       <div class="remember">
         {{ form.remember_me }}
         <label for="id_remember_me">Remember me</label>
+      </div>
+      <div class="forget">        
+        <a href="{% url 'superadmin:forgetpassword' %}">Forget Password?</a>
       </div>
       <button type="submit" class="btn-login">Sign In</button>
     </form>

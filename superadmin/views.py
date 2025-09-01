@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from bson import ObjectId
 from datetime import datetime, timedelta
 from superadmin.forms import LoginForm, CustomUserCreationForm
-from superadmin.models import User
+from superadmin.models import User, OTP
 from plastickothay.models import Post
 import json
+import random
 from fileupload import delete_from_drive
-from email_control import post_mail
+from email_control import post_mail, account_verification_mail, password_reset_mail
 
 
 def get_user(user_id: str) -> User | None:
@@ -41,6 +43,18 @@ def login_view(request):
             remember = form.cleaned_data.get('remember_me')
 
             user = authenticate(request, username=username, password=password)
+
+            if not user.is_verified :
+                otp_code = random.randint(100000, 999999)
+                otp = OTP(username=username, code=otp_code)
+                otp.save()
+                flag = account_verification_mail(user, otp)
+                if flag :
+                    messages.success(request, "Please verify your account.")
+                    return redirect('superadmin:verification', username=username)
+                else :
+                    messages.error(request, "Sorry, Your account is not verified. Try again")
+            
             if user is not None:
                 request.session['user_id'] = str(user.id)
                 if not remember:
@@ -77,14 +91,49 @@ def register(request) :
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Account created successfully. Please log in.")
-            return redirect('superadmin:login')  # Update with your login URL name
+            user = form.save()  # save the user instance
+            username = form.cleaned_data['username']
+            otp_code = random.randint(100000, 999999)
+            otp = OTP(username=username, code=otp_code)
+            otp.save()
+            flag = account_verification_mail(user, otp)
+            if flag :
+                messages.success(request, "Account created successfully. Please verify your account.")
+                return redirect('superadmin:verification', username=username)
+            else :
+                messages.error(request, "Sorry, can't create account. Try again")
+                # return redirect('superadmin:verification')
         else:
             messages.error(request, "Please correct the errors below.")
     else:
         form = CustomUserCreationForm()
     return render(request, 'superadmin/createaccount.html', {'form': form})
+
+def account_verification(request, username: str) :
+    if request.method == 'POST':
+        code = request.POST.get("otp")
+
+        try:
+            code = int(code)
+        except ValueError:
+            messages.error(request, "Invalid OTP format.")
+            return redirect('superadmin:verification')
+        
+        otp_ins = OTP.objects(username=username, code=code).order_by('-created_at').first()
+
+        if otp_ins:
+            if otp_ins.expired_at > datetime.utcnow():
+                user = User.objects(username=username).first()
+                user.is_verified = True
+                user.save()
+                messages.success(request, "OTP verified successfully.")
+                return redirect("superadmin:login")
+            else:
+                messages.error(request, "OTP has expired.")
+        else:
+            messages.error(request, "OTP has expired.")
+
+    return render(request, "superadmin/accountverification.html")
 
 def dashboard(request) :
     if request.session.get('user_id'):
@@ -124,6 +173,14 @@ def dashboard(request) :
         reject_count = Post.objects(created__gte=start_datetime, status = 0).count()
         pending_count = Post.objects(created__gte=start_datetime, status = 2).count()
 
+        day_start = datetime.now().date() - timedelta(days=28)
+        day_end = datetime.now().date()
+        start_datetime = datetime.combine(day_start, datetime.min.time())
+        end_datetime = datetime.combine(day_end, datetime.max.time())
+
+        # posts = Post.objects(created__gte=start_datetime, created__lt=end_datetime)
+        posts = json.loads(Post.objects(status=1).to_json())
+
         context = {
             "user" : user, 
             "wish" : wish,
@@ -135,6 +192,7 @@ def dashboard(request) :
             "accept_count" : accept_count,
             "reject_count" : reject_count,
             "pending_count" : pending_count,
+            "posts" : posts ,
         }
 
         return render(request, 'superadmin/dashboard.html', context)
@@ -174,7 +232,6 @@ def reject_post(request, id: str) :
 
     return redirect(next_url)
 
-
 def logout_view(request) :
     if request.session.get('user_id'):
         user_id = request.session.get('user_id')
@@ -190,3 +247,75 @@ def logout_view(request) :
             return response
     else :
         return redirect("superadmin:dashboard")
+
+def forget_password(request) :
+    if request.method == "POST" :
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+
+        otp_code = random.randint(100000, 999999)
+        otp = OTP(username=username, code=otp_code)
+        otp.save()
+
+        user = User.objects(username=username).first()
+
+        flag = password_reset_mail(user, otp)
+        if flag :
+            messages.success(request, "We've sent a password reset OTP to your email.")
+            return redirect('superadmin:passwordverification', username=username)
+        else :
+            messages.error(request, "Sorry, can't send OTP. Try again")
+        
+    return render(request, "superadmin/forgetpassword.html")
+
+def password_verification(request, username: str) :
+    if request.method == 'POST':
+        code = request.POST.get("otp")
+
+        try:
+            code = int(code)
+        except ValueError:
+            messages.error(request, "Invalid OTP format.")
+            return redirect('superadmin:verification')
+        
+        otp_ins = OTP.objects(username=username, code=code).order_by('-created_at').first()
+
+        if otp_ins:
+            if otp_ins.expired_at > datetime.utcnow():                
+                messages.success(request, "OTP verified successfully.")
+                return redirect("superadmin:resetpassword", username=username)
+            else:
+                messages.error(request, "OTP has expired.")
+        else:
+            messages.error(request, "OTP has expired.")
+
+    return render(request, "superadmin/accountverification.html")
+
+def reset_password(request, username: str) :
+    if request.method == 'POST':
+        password = request.POST.get("password")
+
+        user = User.objects(username=username).first()
+        user.password = make_password(password)
+        user.save()
+        messages.success(request, "Password reset successfully.")
+
+        return redirect("superadmin:login")
+
+    return render(request, "superadmin/resetpassword.html")
+
+def users_view(request) :
+    superadmins = User.objects(user_type = 1)
+    admins = User.objects(user_type = 2)
+    users = User.objects(user_type = 3)
+
+    context = {
+        "superadmins" : superadmins,
+        "admins" : admins,
+        "users" : users
+    }
+
+    return render(request, "superadmin/users.html", context)
+
+def user_view(request) :
+    return render(request, "superadmin/user.html")

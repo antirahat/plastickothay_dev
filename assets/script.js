@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 18
         }).addTo(map);
-        connectLocation();
+        connectLocation();       
     }
     
     // Current location button functionality
@@ -134,12 +134,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function set_post() {
         const basePostUrl = "{% url 'plastickothay:post' 'REPLACE_ID' %}".replace('REPLACE_ID', '');
+        
+        // var circle = L.circle([23.8103, 90.4125], {
+        //     color: 'transparent',        // stroke color
+        //     fillColor: '#30a3ff', // fill color
+        //     fillOpacity: 0.5,
+        //     radius: 500           // radius in meters
+        // }).addTo(map);
+
+        // circle.bindPopup("Radius: 500 m");
+
+        var customIcon = L.icon({
+            iconUrl: ICON_URL, // your icon image URL
+            iconSize: [20, 30],  // size of icon
+            iconAnchor: [20, 40], // point of icon which will correspond to marker's location
+            popupAnchor: [0, -35] // popup position relative to icon
+        });
+
         if (posts && posts.length > 0) {
             posts.forEach(post => {
                 const postId = post._id.$oid;
                 // const postUrl = basePostUrl + postId;
                 const postUrl = "/post/" + postId
-                L.marker([post.lat, post.lon])
+                L.marker([post.lat, post.lon], { icon: customIcon })
                     .addTo(map)
                     .bindPopup(`<b>${post.name}</b><br>Severity: ${post.severity}<br><a href="${postUrl}">Open post</a>`)
             });

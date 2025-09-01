@@ -20,6 +20,15 @@ def home (request):
     if 'user_id' not in request.session:
         if request.COOKIES.get('remember_me') == '1' and request.COOKIES.get('user_id'):
             request.session['user_id'] = request.COOKIES.get('user_id')
+
+    user = None
+    if 'user_id' in request.session:
+        try:
+            user_id = request.session.get('user_id')
+            user = get_user(user_id)
+        except:
+            user = None       
+
     if request.method == "POST" :
         name = request.POST.get("nameData")
         phone = request.POST.get("phoneData")
@@ -38,6 +47,7 @@ def home (request):
 
         if response :
             post = Post(
+                user = user,
                 name=name,
                 email=email,
                 pN=phone,
@@ -55,16 +65,7 @@ def home (request):
             return redirect("plastickothay:home")    
 
     posts = json.loads(Post.objects(status=1).to_json())
-
-    if 'user_id' in request.session:
-        try:
-            user_id = request.session.get('user_id')
-            user = get_user(user_id)
-        except:
-            user = None
-    else:
-        user = None
-    print(user)
+    
     context = {
         "posts" : posts,
         "user" : user,
@@ -142,3 +143,18 @@ def post(request, id) :
 
 def contact(request) :
     return render(request, "plastickothay/contact.html")
+
+def feedback(request) :
+    if 'user_id' in request.session:
+        try:
+            user_id = request.session.get('user_id')
+            user = get_user(user_id)
+        except:
+            user = None
+    else:
+        user = None
+    # print(user)
+    context = {
+        "user" : user,
+    }
+    return render(request, "plastickothay/rateus.html", context)

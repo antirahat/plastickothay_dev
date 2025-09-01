@@ -271,6 +271,18 @@ footer {
     font-size: 0.9rem;
 }
 
+.rate {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 5px 20px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 /* Modal styles */
 .modal {
     display: none;
@@ -708,6 +720,75 @@ input[type="range"]#severity::-moz-range-thumb {
     width: 100%;
 }
 
+/* user page */
+.user-table-content {
+    width: 100vw;
+    overflow-x: auto;
+}
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+}
+
+.user-table th, .user-table td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.user-table th {
+    background-color: #1D5342;
+    color: #fff;
+}
+
+.section-title {
+    font-size: 20px;
+    margin: 30px 0 10px;
+    color: #333;
+}
+
+.action-btn {
+    padding: 4px 8px;
+    margin-right: 4px;
+    font-size: 14px;
+    text-decoration: none;
+    color: white;
+    border-radius: 4px;
+}
+
+.view-btn {
+    background-color: #0d6efd;
+}
+
+.delete-btn {
+    background-color: #d9534f;
+}
+
+/* user view page */
+.profile-content {
+    padding: 40px;
+    display: flex;
+    gap: 20px;
+    justify-content: start;
+    align-items: start;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3) ;
+}
+
+.profile-content .left-part {
+    flex : 0.4;
+}
+
+.profile-content .right-part {
+    position: relative;
+    flex: 1;
+}
+
+.profile-content .right-part .profile-control {
+    position: absolute;
+    right: 10px;
+}
 
 /* Responsive styles */
 @media (max-width: 768px) {

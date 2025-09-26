@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'plastickothay',
-    'superadmin',    
+    'superadmin',
+    "anymail",   
 ]
 
 MIDDLEWARE = [
@@ -137,13 +138,16 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+
+# Default sender (must be a verified sender/domain in Mailjet)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+# Anymail Mailjet settings
+ANYMAIL = {
+    "MAILJET_API_KEY": os.getenv("MAILJET_API_KEY"),
+    "MAILJET_SECRET_KEY": os.getenv("MAILJET_SECRET_KEY"),
+}
 
 AUTHENTICATION_BACKENDS = ['superadmin.auth_backends.MongoBackend']
 

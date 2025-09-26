@@ -3,13 +3,16 @@ from plastickothay.models import Post
 from superadmin.models import User, OTP
 
 def test_email() :
+    subject = "🌟 Thank You for Making a Difference with Plastickothay"
+    body = f"Hi Tester,\n\nThank you for reporting plastic on Plastickothay! Your contribution helps us track and combat plastic pollution more effectively. Every report brings us one step closer to cleaner communities. Stay tuned for updates on how your input is making an impact.\n\nTogether, we can create a plastic-free future.\n\nWarm regards,\nThe Plastickothay Team"
+
     send_mail(
-        'Subject here',
-        'Here is the message.',
-        'contact.plastickothay@gmail.com',
-        ['phylosopherhossain2022@gmail.com'],
-        fail_silently=False,
-    )
+            subject,
+            body,
+            'contact.plastickothay@gmail.com',
+            ['phylosopherhossain2022@gmail.com'],
+            fail_silently=False,
+        )
 
 def test_html_email():
     html_content = """

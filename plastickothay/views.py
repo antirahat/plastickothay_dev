@@ -6,7 +6,7 @@ from superadmin.models import User
 from bson import ObjectId
 from datetime import datetime, timedelta
 import uuid, json
-from email_control import post_mail, test_email
+from email_control import post_mail
 
 def get_user(user_id):
     try:
@@ -70,8 +70,6 @@ def home (request):
         "posts" : posts,
         "user" : user,
     }
-    print("Test Mail")
-    test_email()
 
     return render(request, "plastickothay/index.html", context)
 

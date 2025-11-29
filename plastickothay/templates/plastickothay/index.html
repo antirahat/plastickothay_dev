@@ -13,6 +13,20 @@
             const posts = {{ posts|safe }} ;
         </script>
 
+        <header>
+            <div class="logo">
+                <img src="{% static "logo.svg" %}" alt="Plastic Kothay Logo">
+            </div>
+
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="" id="" placeholder="Search here">
+                <button>
+                    <i class="fa-regular fa-user"></i>
+                </button>
+            </div>
+        </header>
+
         <div class="map-container">
             <div id="map"></div>
             <div class="map-controls">

@@ -64,19 +64,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const mapElement = document.getElementById('map');
     let map;
     let userMarker;
-    
+
     if (mapElement) {
-        // Initialize the map with a default view of Bangladesh
-        map = L.map('map'); // do not use setview initially 
-        
+        // Initialize the map without default zoom controls
+        map = L.map('map', {
+            zoomControl: false
+        });
+
         // Add OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 18
         }).addTo(map);
-        connectLocation();       
+
+        connectLocation();
     }
-    
+
     // Current location button functionality
     const locationBtn = document.getElementById('currentLocation');
     if (locationBtn) {
@@ -85,17 +88,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    
+
                     // Center map on user's location
                     map.setView([lat, lng], 15);
-                    
+
                     // Add or update marker for user's location
-                    // if (userMarker) {
-                    //     userMarker.setLatLng([lat, lng]);
-                    // } else {
-                    //     userMarker = L.marker([lat, lng]).addTo(map);
-                    //     userMarker.bindPopup('Your location');
-                    // }
+                    if (userMarker) {
+                        userMarker.setLatLng([lat, lng]);
+                    } else {
+                        userMarker = L.marker([lat, lng]).addTo(map)
+                            .bindPopup('I am here');
+                            // .openPopup();
+                    }
                 }, function(error) {
                     console.error('Error getting location:', error);
                     alert('Unable to get your location. Please check your permissions.');
@@ -106,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    //connect location function
+    // Connect location function on map load
     function connectLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -115,22 +119,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Center map on user's location
                 map.setView([lat, lng], 15);
+
                 // Add or update marker for user's location
-                // if (userMarker) {
-                //     userMarker.setLatLng([lat, lng]);
-                // } else {
-                //     userMarker = L.marker([lat, lng]).addTo(map);
-                //     userMarker.bindPopup('Your location').openPopup();
-                // }
+                if (userMarker) {
+                    userMarker.setLatLng([lat, lng]);
+                } else {
+                    userMarker = L.marker([lat, lng]).addTo(map)
+                        .bindPopup('I am here');
+                        // .openPopup();
+                }
             }, function(error) {
                 console.error('Error getting location:', error);
                 alert('Unable to get your location. Please check your permissions.');
             });
         } else {
             alert('Geolocation is not supported by your browser.');
-            
-        }   // Add or update marker for user's location
+        }
     }
+
 
     function set_post() {
         const basePostUrl = "{% url 'plastickothay:post' 'REPLACE_ID' %}".replace('REPLACE_ID', '');

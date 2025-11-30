@@ -114,6 +114,11 @@ def posts(request):
         "posts": posts.order_by('-created')[:10],  # First 10 posts for "load more"
         "user": user,
     }
+    
+    # Check if it's an AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, "plastickothay/posts.html", context)
+    
     return render(request, "plastickothay/posts.html", context)
 
 def post(request, id) :
@@ -158,3 +163,66 @@ def feedback(request) :
         "user" : user,
     }
     return render(request, "plastickothay/rateus.html", context)
+
+def contribution(request):
+    if 'user_id' in request.session:
+        try:
+            user_id = request.session.get('user_id')
+            user = get_user(user_id)
+        except:
+            user = None
+    else:
+        user = None
+    
+    # Calculate user contribution stats
+    user_posts = []
+    total_points = 0
+    photos_posted = 0
+    reviews_written = 0
+    friends_referred = 0
+    current_level = 1
+    points_to_next_level = 0
+    progress_percentage = 0
+    
+    if user:
+        # Get all accepted posts by user
+        user_posts = Post.objects(user=user, status=1)
+        photos_posted = user_posts.count()
+        
+        # Calculate points (each post = 1 point, each review = 1 point, each referral = 1 point)
+        total_points = photos_posted + reviews_written + friends_referred
+        
+        # Calculate level (every 5 points = 1 level)
+        current_level = (total_points // 5) + 1
+        points_to_next_level = 5 - (total_points % 5)
+        
+        # Calculate progress percentage for current level (0-100%)
+        progress_percentage = min(100, ((total_points % 5) / 5) * 100)
+        
+        # Get reviews count (assuming reviews are stored separately, for now using 0)
+        # reviews_written = Rate.objects(user=user).count() if hasattr(Rate, 'user') else 0
+        
+        # For demo purposes, set some default values
+        reviews_written = 0  # Can be updated when review system is implemented
+        friends_referred = 0  # Can be updated when referral system is implemented
+    
+    # Badge requirements
+    badge_requirements = {
+        'photos': 2,
+        'reviews': 2,
+        'referrals': 2
+    }
+    
+    context = {
+        "user": user,
+        "total_points": total_points,
+        "photos_posted": photos_posted,
+        "reviews_written": reviews_written,
+        "friends_referred": friends_referred,
+        "current_level": current_level,
+        "points_to_next_level": points_to_next_level,
+        "progress_percentage": progress_percentage,
+        "badge_requirements": badge_requirements,
+        "user_posts": user_posts,
+    }
+    return render(request, "plastickothay/contribution.html", context)

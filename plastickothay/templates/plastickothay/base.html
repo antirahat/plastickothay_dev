@@ -172,18 +172,20 @@
     
     <footer>
         {% comment %} <p>&copy; 2025 Plastic Kothay. All rights reserved.</p> {% endcomment %}
-        <button>
-            <i class="fa-solid fa-circle-info"></i>
-            <span>Post</span>
+        <button onclick="window.location.href='{% url 'plastickothay:posts' %}'">
+            <img src="{% static 'post.png' %}" alt="Posts" style="width: 25px; height: 25px; filter: invert(1);">
+            <span>Posts</span>
         </button>
 
-        <button>
-            <i class="fa-regular fa-house"></i>
+        <button onclick="window.location.href='{% url 'plastickothay:home' %}'">
+            <img src="{% static 'homepage.png' %}" alt="Home" style="width: 25px; height: 25px; filter: invert(1);">
             <span>Home</span>
         </button>
 
-        <button>
-            <i class="fa-solid fa-circle-info"></i>
+
+
+        <button onclick="window.location.href='{% url 'plastickothay:contribution' %}'">
+            <img src="{% static 'contribution.png' %}" alt="Contribution" style="width: 25px; height: 25px; filter: invert(1);">
             <span>Contribution</span>
         </button>
     </footer>    

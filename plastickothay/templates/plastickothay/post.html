@@ -9,73 +9,156 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
     z-index: 9999;
-    {% comment %} display: flex; {% endcomment %}
+    display: flex;
     justify-content: center;
     align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.desmodal.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Modal content box */
 .desmodal-content {
-    background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    width: 500px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 2.5rem;
+    border-radius: 20px;
+    width: 550px;
     max-width: 90%;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease-in-out;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.desmodal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1D5342 0%, #043F2D 50%, #1D5342 100%);
 }
 
 /* Modal heading */
 .desmodal-content h3 {
     margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1D5342;
+    background: linear-gradient(135deg, #1D5342 0%, #043F2D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Textarea styling */
 #descriptionTextarea {
     width: 100%;
-    height: 150px;
-    padding: 10px;
+    height: 180px;
+    padding: 1rem;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
     resize: vertical;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    color: #333;
+}
+
+#descriptionTextarea:focus {
+    outline: none;
+    border-color: #1D5342;
+    box-shadow: 0 0 0 4px rgba(29, 83, 66, 0.1);
 }
 
 /* Modal button container */
 .desmodal-actions {
-    margin-top: 15px;
+    margin-top: 1.5rem;
     display: flex;
     justify-content: flex-end;
+    gap: 0.75rem;
 }
 
 /* Modal buttons */
 .desmodal-actions button {
-    padding: 8px 14px;
-    font-size: 0.95rem;
-    margin-left: 10px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.desmodal-actions button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.desmodal-actions button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.desmodal-actions button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.desmodal-actions button:active {
+    transform: translateY(0);
 }
 
 .desmodal-actions button:first-child {
-    background-color: #28a745; /* green for save */
+    background: linear-gradient(135deg, #28a745 0%, #198754 100%);
     color: white;
+}
+
+.desmodal-actions button:first-child:hover {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%);
 }
 
 .desmodal-actions button:last-child {
-    background-color: #dc3545; /* red for cancel */
+    background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
     color: white;
 }
 
-/* Fade-in animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+.desmodal-actions button:last-child:hover {
+    background: linear-gradient(135deg, #bb2d3b 0%, #a02a37 100%);
+}
+
+/* Animations */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 </style>
     <!-- Leaflet CSS for OpenStreetMap -->
@@ -127,7 +210,9 @@
                             </div>
                         </div>
                     </p>
-                    <p><strong>Lat:</strong> {{ post.lat }}&nbsp & &nbsp<strong>Lon:</strong> {{ post.lon }}</p>                    
+                    <div class="coordinates-container">
+                        <p><strong>Coordinates:</strong> <span class="coord-value">{{ post.lat }}, {{ post.lon }}</span></p>
+                    </div>                    
                     <div class="description-container">
                         <strong>Description:</strong>
                         <p>{{ post.description }}</p>
@@ -162,7 +247,9 @@
                             </div>
                         </div>
                     </p>
-                    <p><strong>Lat:</strong> {{ post.lat }}&nbsp & &nbsp<strong>Lon:</strong> {{ post.lon }}</p>                    
+                    <div class="coordinates-container">
+                        <p><strong>Coordinates:</strong> <span class="coord-value">{{ post.lat }}, {{ post.lon }}</span></p>
+                    </div>                    
                     <div class="description-container">
                         <strong>Description:</strong>
                         <p>{{ post.description }}</p>
@@ -176,13 +263,13 @@
     </div>
 
     <!-- Edit Description Modal -->
-    <div id="editDescriptionModal" class="desmodal" style="display: none;">
+    <div id="editDescriptionModal" class="desmodal">
         <form class="desmodal-content" method="post">
             {% csrf_token %}
             <h3>Edit Description</h3>
-            <textarea id="descriptionTextarea" name="description">{{ post.description }}</textarea>
+            <textarea id="descriptionTextarea" name="description" placeholder="Enter description...">{{ post.description }}</textarea>
             <div class="desmodal-actions">
-                <button type="submit">Save</button>
+                <button type="submit">Save Changes</button>
                 <button type="button" onclick="closeEditModal()">Cancel</button>
             </div>
         </form>
@@ -223,12 +310,23 @@
             }
         });
         function openEditModal() {
-            document.getElementById('editDescriptionModal').style.display = 'flex';
+            const modal = document.getElementById('editDescriptionModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeEditModal() {
-            document.getElementById('editDescriptionModal').style.display = 'none';
+            const modal = document.getElementById('editDescriptionModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
         }
+
+        // Close modal when clicking outside
+        document.getElementById('editDescriptionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
 
         function saveDescription() {
             const newDescription = document.getElementById('descriptionTextarea').value;

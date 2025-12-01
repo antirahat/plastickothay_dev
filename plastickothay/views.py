@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from fileupload import upload_to_drive
@@ -7,6 +8,11 @@ from bson import ObjectId
 from datetime import datetime, timedelta
 import uuid, json
 from email_control import post_mail
+
+# https://plastickothay-dev.onrender.com/keep-alive
+
+def keep_alive(request):
+    return JsonResponse({"status": "ok"}, status=200)
 
 def get_user(user_id):
     try:

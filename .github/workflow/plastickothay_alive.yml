@@ -1,0 +1,74 @@
+name: Keep Plastic Kothay Alive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # Every 10 minutes
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Try ping (3 tries)
+        id: ping_server
+        run: |
+          URL="${{ secrets.APP_URL }}"
+          MAX_RETRY=3
+          COUNT=1
+          SUCCESS=0
+          LAST_HTTP_CODE=0
+
+          while [ $COUNT -le $MAX_RETRY ]; do
+            echo "Try $COUNT: Pinging $URL"
+            HTTP_CODE=$(curl -m 10 -o /dev/null -s -w "%{http_code}" "$URL")
+            LAST_HTTP_CODE=$HTTP_CODE
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Server OK (200)"
+              SUCCESS=1
+              break
+            else
+              echo "Failed (HTTP $HTTP_CODE)"
+            fi
+
+            COUNT=$((COUNT+1))
+            sleep 5
+          done
+
+          echo "success=$SUCCESS" >> $GITHUB_OUTPUT
+          echo "last_http_code=$LAST_HTTP_CODE" >> $GITHUB_OUTPUT
+
+      - name: Send Email Alert (SMTP)
+        if: steps.ping_server.outputs.success == '0'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y msmtp mailutils
+
+          # Configure SMTP
+          echo "defaults" > ~/.msmtprc
+          echo "auth on" >> ~/.msmtprc
+          echo "tls on" >> ~/.msmtprc
+          echo "tls_trust_file /etc/ssl/certs/ca-certificates.crt" >> ~/.msmtprc
+          echo "account default" >> ~/.msmtprc
+          echo "host smtp.gmail.com" >> ~/.msmtprc
+          echo "port 587" >> ~/.msmtprc
+          echo "user ${{ secrets.EMAIL_USER }}" >> ~/.msmtprc
+          echo "from ${{ secrets.EMAIL_USER }}" >> ~/.msmtprc
+          echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
+          chmod 600 ~/.msmtprc
+
+          # Email content with subject
+          MESSAGE="Subject: 🚨 Render server DOWN - $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
+
+🚨 Render server is DOWN after 3 retries!
+URL: ${{ secrets.APP_URL }}
+Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
+Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+
+          # Send to Email 1
+          echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
+
+          # Send to Email 2
+          echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}

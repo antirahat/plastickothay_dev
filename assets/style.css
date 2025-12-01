@@ -46,21 +46,30 @@ header {
     border-bottom-right-radius: 15px;    
 }
 
+header .logo {
+    width: 20px;
+    /* aspect-ratio: 1/1;
+    border-radius: 50%;
+    overflow: hidden; */
+}
+
 header .search-container{
     padding: 7px;
+    width: 300px;
     display: flex;
     /* justify-content: center; */
     align-items: center;
     gap: 5px;
-    border: 1px solid black;
     border-radius: 5px;
     backdrop-filter: blur(6px);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 1);
 }
 
 header .search-container input {
     outline: 0;
     border: 0;
     background-color: transparent;
+    flex: 1;
 }
 
 header .search-container button {
@@ -247,8 +256,8 @@ main {
 
 .map-controls {
     position: absolute;
-    bottom: 3rem;
-    right: 2rem;
+    bottom: 1rem;
+    right: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -400,8 +409,10 @@ footer button:hover::before {
     opacity: 1;
 }
 
-footer button:active {
-    transform: translateY(-1px);
+footer button.active {
+    transform: translateY(-3px);
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 footer button i {
@@ -2340,8 +2351,8 @@ input[type="range"]#severity::-moz-range-thumb {
     }
 
     .map-controls {
-        bottom: 2rem;
-        right: 1rem;
+        bottom: 1rem;
+        right: 0.8rem;
     }
 
     .location-btn {

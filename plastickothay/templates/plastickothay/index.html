@@ -14,9 +14,9 @@
         </script>
 
         <header>
-            <div class="logo">
-                <img src="{% static "logo.svg" %}" alt="Plastic Kothay Logo">
-            </div>
+            <a class="logo" href="{% url 'plastickothay:home' %}">
+                <img src="{% static "favicon.svg" %}" alt="Plastic Kothay Logo">
+            </a>
 
             <div class="search-container">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -34,8 +34,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
                 </button>
                 <button class="report-btn" id="reportBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                    Post
+                    <img src="{% static 'post.png' %}" alt="Posts" style="width: 15px; height: 15px; filter: invert(1);">
+                    Add a post
                 </button>
             </div>
         </div>

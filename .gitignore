@@ -1,3 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.env
 .env
+.env.*
+# *.sqlite3
+
+# Django
+# db.sqlite3
+media/
+staticfiles/
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# Logs
+*.log
+
+# OS system files
+.DS_Store
+Thumbs.db
+
+# JSON config files you don't want exposed
 file.json
-staticfiles
+
+# Migrations (OPTIONAL — remove if you want migrations tracked)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Compiled static files
+static/
+
+# Cache
+*.cache
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Node (if using frontend)
+node_modules/

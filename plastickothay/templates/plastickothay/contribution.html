@@ -96,7 +96,7 @@
     {% else %}
     <div class="login-prompt">
         <p>Please log in to view your contribution.</p>
-        <button class="login-btn" onclick="document.querySelector('.profile-btn').click()">Login</button>
+        <button class="login-btn" onclick="window.location.href='{% url 'superadmin:login' %}'">Login</button>
     </div>
     {% endif %}
 </div>

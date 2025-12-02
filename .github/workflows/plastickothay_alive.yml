@@ -39,28 +39,28 @@ jobs:
           echo "success=$SUCCESS" >> $GITHUB_OUTPUT
           echo "last_http_code=$LAST_HTTP_CODE" >> $GITHUB_OUTPUT
 
-      - name: Send Email Alert (SMTP)
-        if: steps.ping_server.outputs.success == 0
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y msmtp mailutils
+      # - name: Send Email Alert (SMTP)
+      #   if: steps.ping_server.outputs.success == 0
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y msmtp mailutils
 
-          # Configure SMTP
-          echo "defaults" > ~/.msmtprc
-          echo "auth on" >> ~/.msmtprc
-          echo "tls on" >> ~/.msmtprc
-          echo "tls_trust_file /etc/ssl/certs/ca-certificates.crt" >> ~/.msmtprc
-          echo "account default" >> ~/.msmtprc
-          echo "host smtp.gmail.com" >> ~/.msmtprc
-          echo "port 587" >> ~/.msmtprc
-          echo "user ${{ secrets.EMAIL_USER }}" >> ~/.msmtprc
-          echo "from ${{ secrets.EMAIL_USER }}" >> ~/.msmtprc
-          echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
-          chmod 600 ~/.msmtprc
+      #     # Configure SMTP
+      #     echo "defaults" > ~/.msmtprc
+      #     echo "auth on" >> ~/.msmtprc
+      #     echo "tls on" >> ~/.msmtprc
+      #     echo "tls_trust_file /etc/ssl/certs/ca-certificates.crt" >> ~/.msmtprc
+      #     echo "account default" >> ~/.msmtprc
+      #     echo "host smtp.gmail.com" >> ~/.msmtprc
+      #     echo "port 587" >> ~/.msmtprc
+      #     echo "user ${{ secrets.EMAIL_USER }}" >> ~/.msmtprc
+      #     echo "from ${{ secrets.EMAIL_USER }}" >> ~/.msmtprc
+      #     echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
+      #     chmod 600 ~/.msmtprc
 
-          # Build email body (no Subject/To in variable, send separately)
-          EMAIL_BODY="⚠️ Your Render server is DOWN.\n\nDetails:\n- URL: ${{ secrets.APP_URL }}\n- Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}\n- Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')\n\nThis alert was generated automatically by GitHub Actions."
+      #     # Build email body (no Subject/To in variable, send separately)
+      #     EMAIL_BODY="⚠️ Your Render server is DOWN.\n\nDetails:\n- URL: ${{ secrets.APP_URL }}\n- Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}\n- Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')\n\nThis alert was generated automatically by GitHub Actions."
 
-          # Send the email
-          echo -e "$EMAIL_BODY" | msmtp -v -s "🚨 Render Server DOWN" ${{ secrets.ALERT_EMAIL_1 }}
-          echo -e "$EMAIL_BODY" | msmtp -v -s "🚨 Render Server DOWN" ${{ secrets.ALERT_EMAIL_2 }}
+      #     # Send the email
+      #     echo -e "$EMAIL_BODY" | msmtp -v -s "🚨 Render Server DOWN" ${{ secrets.ALERT_EMAIL_1 }}
+      #     echo -e "$EMAIL_BODY" | msmtp -v -s "🚨 Render Server DOWN" ${{ secrets.ALERT_EMAIL_2 }}

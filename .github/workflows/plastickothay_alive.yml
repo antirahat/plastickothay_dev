@@ -40,7 +40,7 @@ jobs:
           echo "last_http_code=$LAST_HTTP_CODE" >> $GITHUB_OUTPUT
 
       - name: Send Email Alert (SMTP)
-        if: steps.ping_server.outputs.success == '0'
+        if: steps.ping_server.outputs.success == 0
         run: |
           sudo apt-get update
           sudo apt-get install -y msmtp mailutils

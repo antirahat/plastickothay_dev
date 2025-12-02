@@ -57,13 +57,20 @@ jobs:
           echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
           chmod 600 ~/.msmtprc
 
-          MESSAGE="Subject: 🚨 Render server DOWN - $(date -u +'%Y-%m-%d %H:%M:%S UTC')
-                  To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
+          MESSAGE=$(cat <<EOF
+Subject: 🚨 Render Server DOWN - $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
 
-                  Render server is DOWN after 3 retries!
-                  URL: ${{ secrets.APP_URL }}
-                  Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
-                  Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+⚠️ **Your Render server is DOWN.**
 
-          echo \"$MESSAGE\" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
-          echo \"$MESSAGE\" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}
+Details:
+- URL: ${{ secrets.APP_URL }}
+- Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
+- Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+This alert was generated automatically by GitHub Actions.
+EOF
+)
+
+          echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
+          echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}

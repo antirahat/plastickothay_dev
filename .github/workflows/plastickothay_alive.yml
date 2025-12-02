@@ -2,7 +2,7 @@ name: Keep Plastic Kothay Alive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # Every 10 minutes
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -45,7 +45,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y msmtp mailutils
 
-          # Configure SMTP
           echo "defaults" > ~/.msmtprc
           echo "auth on" >> ~/.msmtprc
           echo "tls on" >> ~/.msmtprc
@@ -58,20 +57,13 @@ jobs:
           echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
           chmod 600 ~/.msmtprc
 
-          # Prepare message with EOF block
-          MESSAGE="$(cat <<EOF
-Subject: 🚨 Render server DOWN - $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          MESSAGE="Subject: 🚨 Render server DOWN - $(date -u +'%Y-%m-%d %H:%M:%S UTC')
 To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
 
 Render server is DOWN after 3 retries!
 URL: ${{ secrets.APP_URL }}
 Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
-Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-EOF
-)"
+Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 
-          # Send to Email 1
-          echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
-
-          # Send to Email 2
-          echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}
+          echo \"$MESSAGE\" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
+          echo \"$MESSAGE\" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}

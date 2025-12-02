@@ -1,44 +1,3 @@
-name: Keep Plastic Kothay Alive
-
-on:
-  schedule:
-    - cron: "*/10 * * * *"
-  workflow_dispatch:
-
-jobs:
-  ping:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Try ping (3 tries)
-        id: ping_server
-        run: |
-          URL="${{ secrets.APP_URL }}"
-          MAX_RETRY=3
-          COUNT=1
-          SUCCESS=0
-          LAST_HTTP_CODE=0
-
-          while [ $COUNT -le $MAX_RETRY ]; do
-            echo "Try $COUNT: Pinging $URL"
-            HTTP_CODE=$(curl -m 10 -o /dev/null -s -w "%{http_code}" "$URL")
-            LAST_HTTP_CODE=$HTTP_CODE
-
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "Server OK (200)"
-              SUCCESS=1
-              break
-            else
-              echo "Failed (HTTP $HTTP_CODE)"
-            fi
-
-            COUNT=$((COUNT+1))
-            sleep 5
-          done
-
-          echo "success=$SUCCESS" >> $GITHUB_OUTPUT
-          echo "last_http_code=$LAST_HTTP_CODE" >> $GITHUB_OUTPUT
-
       - name: Send Email Alert (SMTP)
         if: steps.ping_server.outputs.success == 0
         run: |
@@ -61,7 +20,7 @@ jobs:
 Subject: 🚨 Render Server DOWN - $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
 
-⚠️ **Your Render server is DOWN.**
+⚠️ Your Render server is DOWN.
 
 Details:
 - URL: ${{ secrets.APP_URL }}

@@ -21,7 +21,7 @@ jobs:
 
           while [ $COUNT -le $MAX_RETRY ]; do
             echo "Try $COUNT: Pinging $URL"
-            HTTP_CODE=$(curl -m 10 -o /dev/null -s -w "%{http_code}" "$URL")
+            HTTP_CODE=$(curl -m 20 -o /dev/null -s -w "%{http_code}" "$URL")
             LAST_HTTP_CODE=$HTTP_CODE
 
             if [ "$HTTP_CODE" = "200" ]; then
@@ -33,7 +33,7 @@ jobs:
             fi
 
             COUNT=$((COUNT+1))
-            sleep 5
+            sleep 30
           done
 
           echo "success=$SUCCESS" >> $GITHUB_OUTPUT

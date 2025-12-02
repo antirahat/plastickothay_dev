@@ -73,4 +73,5 @@ jobs:
             
                 # Send the email
                 echo -e "$EMAIL_BODY" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
+
                 echo -e "$EMAIL_BODY" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}

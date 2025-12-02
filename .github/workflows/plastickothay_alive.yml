@@ -58,14 +58,17 @@ jobs:
           echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
           chmod 600 ~/.msmtprc
 
-          # Email content with subject
-          MESSAGE="Subject: 🚨 Render server DOWN - $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          # Build message using YAML block scalar (no YAML errors)
+          MESSAGE=$(cat <<EOF
+Subject: 🚨 Render server DOWN - $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
 
 🚨 Render server is DOWN after 3 retries!
 URL: ${{ secrets.APP_URL }}
 Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
-Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+EOF
+)
 
           # Send to Email 1
           echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}

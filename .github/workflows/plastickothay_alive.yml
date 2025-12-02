@@ -58,8 +58,8 @@ jobs:
           echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
           chmod 600 ~/.msmtprc
 
-          # Build message using YAML block scalar (no YAML errors)
-          MESSAGE=$(cat <<EOF
+          # Prepare message with EOF block
+          MESSAGE="$(cat <<EOF
 Subject: 🚨 Render server DOWN - $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
 
@@ -68,7 +68,7 @@ URL: ${{ secrets.APP_URL }}
 Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
 Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 EOF
-)
+)"
 
           # Send to Email 1
           echo "$MESSAGE" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}

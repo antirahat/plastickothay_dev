@@ -44,7 +44,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y msmtp mailutils
-      
+
           # Configure SMTP
           echo "defaults" > ~/.msmtprc
           echo "auth on" >> ~/.msmtprc
@@ -57,21 +57,10 @@ jobs:
           echo "from ${{ secrets.EMAIL_USER }}" >> ~/.msmtprc
           echo "password ${{ secrets.EMAIL_PASS }}" >> ~/.msmtprc
           chmod 600 ~/.msmtprc
-      
-          # Build email message without EOF
-          EMAIL_BODY="Subject: 🚨 Render Server DOWN\n\
-            To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}\n\
-            \n\
-            ⚠️ Your Render server is DOWN.\n\
-            \n\
-            Details:\n\
-            - URL: ${{ secrets.APP_URL }}\n\
-            - Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}\n\
-            - Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')\n\
-            \n\
-            This alert was generated automatically by GitHub Actions."
-            
-                # Send the email
-                echo -e "$EMAIL_BODY" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
 
-                echo -e "$EMAIL_BODY" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}
+          # Build email body (no Subject/To in variable, send separately)
+          EMAIL_BODY="⚠️ Your Render server is DOWN.\n\nDetails:\n- URL: ${{ secrets.APP_URL }}\n- Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}\n- Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')\n\nThis alert was generated automatically by GitHub Actions."
+
+          # Send the email
+          echo -e "$EMAIL_BODY" | msmtp -v -s "🚨 Render Server DOWN" ${{ secrets.ALERT_EMAIL_1 }}
+          echo -e "$EMAIL_BODY" | msmtp -v -s "🚨 Render Server DOWN" ${{ secrets.ALERT_EMAIL_2 }}

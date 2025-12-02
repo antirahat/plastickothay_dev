@@ -58,11 +58,12 @@ jobs:
           chmod 600 ~/.msmtprc
 
           MESSAGE="Subject: 🚨 Render server DOWN - $(date -u +'%Y-%m-%d %H:%M:%S UTC')
-To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
+                  To: ${{ secrets.ALERT_EMAIL_1 }}, ${{ secrets.ALERT_EMAIL_2 }}
 
-URL: ${{ secrets.APP_URL }}
-Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
-Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+                  Render server is DOWN after 3 retries!
+                  URL: ${{ secrets.APP_URL }}
+                  Last HTTP Code: ${{ steps.ping_server.outputs.last_http_code }}
+                  Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 
           echo \"$MESSAGE\" | msmtp -v ${{ secrets.ALERT_EMAIL_1 }}
           echo \"$MESSAGE\" | msmtp -v ${{ secrets.ALERT_EMAIL_2 }}
